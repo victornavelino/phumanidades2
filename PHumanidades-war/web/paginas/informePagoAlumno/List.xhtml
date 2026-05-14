@@ -12,172 +12,164 @@
 
 
     <ui:define name="content">
+        <h:outputStylesheet library="css" name="modern_alumno.css"/>
 
+        <div class="header-section">
+            <b:container>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="font-weight: 800; margin: 0;">Portal del Alumno</h1>
+                        <p style="opacity: 0.8; margin-top: 0.5rem;">Gestión de informes de pago y comprobantes</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h2 style="font-weight: 300; margin: 0;"><h:outputText value="#{loginAlumnoBean.alumno}"/></h2>
+                        <span class="status-badge status-approved">Sesión Activa</span>
+                    </div>
+                </div>
+                <h:outputText id="idPreferencia" style="display:none" value="#{mercadoPagoBean.preferenceId}" />
+            </b:container>
+        </div>
 
-        <h3>
-            <h:outputText value="Informe de Pago - Alumnos"></h:outputText>
-            <h:outputText id="idPreferencia" style="display:none" value="#{mercadoPagoBean.preferenceId}" />
-        </h3>
-        <h:form id="informePagoAlumnoListForm">
-             
-            <p:panel header="Carga de Comprobantes">
-                <h:panelGrid columns="2" style="width: 50%" >
-                    <h:outputText value="Alumno: "></h:outputText>
-                    <h2><h:outputText value="#{loginAlumnoBean.alumno}"></h:outputText></h2>
-                </h:panelGrid>
-
-                <p:panel id="pnCohortesConsulta" 
-                         >
-                    <p:dataTable  id="dtCortesCobros"
-                                  value="#{cohorteLstBean.lstCohortesAlumnosConsulta}"
-                                  var="cort"  
-                                  rowKey="#{cort.id}">
-                        <p:column width="10%">
-                            <p:commandButton id="btnBuscar"
-                                             actionListener="#{informePagoAlumnoController.obtenerComprobantesAlumno(loginAlumnoBean.alumno,cort)}"
-                                             icon="ui-icon-search"
-                                             styleClass="boton"
-                                             process="informePagoAlumnoListForm:datalist, @this"
-                                             />
-
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Carrera"/>
-                            </f:facet>
-                            <h:outputText value="#{cort.carrera.descripcion}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Cohorte"/>
-                            </f:facet>
-                            <h:outputText value="#{cort.descripcion}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Año"/>
-                            </f:facet>
-                            <h:outputText value="#{cort.anio}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Pagar"/>
-                            </f:facet>
-                            <div align="center">
-                                <!-- COMENTAR ESTE BOTON MIENTRAS NO SE TERMINE LO DE MERCADO PAGO -->
-                                <p:commandButton id="btnPagar" 
-                                                 icon="ui-icon-cart"
-                                                 action="#{mercadoPagoBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
-                                                 styleClass="boton"
-                                                 oncomplete="PF('MercadoPagoDialog').show()"
-                                                 update="idPreferencia, mpDialog"
-                                                 /> 
-                            </div>
-
-                        </p:column>
-
-                      
-                    </p:dataTable>
-                   
-                    <h:outputText value="Haga Click en la lupa para seleccionar Cohorte y cargar el detalle de la cuotas pagas - De lo contrario la operacion no se llevara a cabo"/>
-
-
-                </p:panel>
-                <p:dataTable id="datalist" value="#{informePagoAlumnoController.items}" var="item"
-                             selectionMode="single" selection="#{informePagoAlumnoController.selected}"
-                             paginator="true"
-                             rowKey="#{item.id}"
-                             rows="10"
-                             rowsPerPageTemplate="10,20,30,40,50"
-                             filterEvent="enter"
-                             >
-                    <!--ajax aqui abajo-->
-                    
-                    <p:ajax event="rowSelect"   update="createButtonIPA editButtonIPA deleteButtonIPA"/>
-                    <p:ajax event="rowUnselect" update="createButtonIPA editButtonIPA deleteButtonIPA"/>
-
-                    <p:column style="text-align: center;  width: 60">
-                        <f:facet name="header">
-                            <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_id}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.id}"/>
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_alumno}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.alumno}"/>
-                    </p:column>
-                    <p:column style="text-align: center">
-                        <f:facet name="header">
-                            <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_cohorte}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.cohorte}"/>
-                    </p:column>
-                    <p:column style="text-align: center">
-                        <f:facet name="header">
-                            <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_nroCuota}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.nroCuota}"/>
-                    </p:column>
-
-                    <p:column style="text-align: center">
-                        <f:facet name="header">
-                            <h:outputText value="Cantidad de Cuotas"/>
-                        </f:facet>
-                        <h:outputText value="#{item.cantidadCuotas}"/>
-                    </p:column>
-
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_descripcion}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.descripcion}"/>
-                    </p:column>
-                    <p:column style="text-align: center">
-                        <f:facet name="header">
-                            <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_fecha}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
-                        </h:outputText>
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_comprobantePago}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.nombreComprobantePago}"/>
-                    </p:column>
-                    <p:column style="text-align: center">
-                        <f:facet name="header">
-                            <h:outputText value="Estado del Comprobante"/>
-                        </f:facet>
-                        <h:outputText value="#{item.estadoComprobanteAlumno.name}"/>
-                    </p:column>
-                    <p:column style="text-align: center">
-                        <f:facet name="header">
-                            <h:outputText value="Mensaje del Sistema"/>
-                        </f:facet>
-                        <h:outputText value="#{item.respuestaSistema}"/>
-                    </p:column>
-                    <p:column style="text-align: center; width: 150">
-                        <f:facet name="header">
-                            <h:outputText value="Descargar"/>
-                        </f:facet>
-                        <b:commandButton iconAwesome="fa-thin fa-download" value="" action="#{informePagoAlumnoController.FileDownloadView(item)}"
-                                         look="success">
-                            <p:fileDownload value="#{informePagoAlumnoController.file}"/>
-                        </b:commandButton>
-                    </p:column>
-                    <f:facet name="footer">
-                        <p:commandButton id="createButtonIPA" icon="ui-icon-plus"   value="#{bundleInformePagoAlumno.Create}" actionListener="#{informePagoAlumnoController.prepareCreate}" update=":InformePagoAlumnoCreateForm" oncomplete="PF('InformePagoAlumnoCreateDialog').show()"/>
-                        <p:commandButton id="editButtonIPA"   icon="ui-icon-pencil" value="Modificar Comprobante" update=":InformePagoAlumnoEditForm" oncomplete="PF('InformePagoAlumnoEditDialog').show()" disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}"/>
-                        <p:commandButton id="deleteButtonIPA" icon="ui-icon-trash"  value="#{bundleInformePagoAlumno.Delete}" actionListener="#{informePagoAlumnoController.destroy}" update=":frmPri:growl,datalist" disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}"/>
-                    </f:facet>
-                </p:dataTable>
-            
+        <b:container style="margin-top: -1rem; position: relative; z-index: 2;">
+            <h:form id="informePagoAlumnoListForm">
                 
-            </p:panel>
+                <!-- Sección de Cohortes y Pagos -->
+                <div class="dashboard-card">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                        <i class="fa fa-graduation-cap" style="font-size: 1.5rem; color: var(--primary-color); margin-right: 1rem;"></i>
+                        <h3 style="margin: 0; font-weight: 700;">Tus Carreras e Inscripciones</h3>
+                    </div>
+
+                    <p:panel id="pnCohortesConsulta">
+                        <p:dataTable id="dtCortesCobros"
+                                     value="#{cohorteLstBean.lstCohortesAlumnosConsulta}"
+                                     var="cort"
+                                     rowKey="#{cort.id}"
+                                     tableStyleClass="modern-table">
+                            
+                            <p:column headerText="Carrera" style="font-weight: 600;">
+                                <h:outputText value="#{cort.carrera.descripcion}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Cohorte">
+                                <h:outputText value="#{cort.descripcion}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Año" style="text-align: center; width: 80px;">
+                                <h:outputText value="#{cort.anio}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Acciones" style="text-align: center; width: 200px;">
+                                <div style="display: flex; gap: 10px; justify-content: center;">
+                                    <p:commandButton id="btnBuscar"
+                                                     actionListener="#{informePagoAlumnoController.obtenerComprobantesAlumno(loginAlumnoBean.alumno,cort)}"
+                                                     icon="ui-icon-search"
+                                                     title="Ver Comprobantes"
+                                                     styleClass="btn-modern"
+                                                     process="informePagoAlumnoListForm:datalist, @this"
+                                                     update="informePagoAlumnoListForm:datalist"/>
+
+                                    <p:commandButton id="btnPagar" 
+                                                     icon="ui-icon-cart"
+                                                     value="Pagar Cuota"
+                                                     action="#{mercadoPagoBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
+                                                     styleClass="btn-modern btn-primary"
+                                                     oncomplete="PF('MercadoPagoDialog').show()"
+                                                     update=":idPreferencia, :mpDialog"/>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem; font-style: italic;">
+                            <i class="fa fa-info-circle"></i> Seleccione una cohorte para ver el detalle de sus pagos.
+                        </div>
+                    </p:panel>
+                </div>
+
+                <!-- Listado de Comprobantes -->
+                <div class="dashboard-card">
+                    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                        <i class="fa fa-file-text" style="font-size: 1.5rem; color: var(--primary-color); margin-right: 1rem;"></i>
+                        <h3 style="margin: 0; font-weight: 700;">Mis Comprobantes Informados</h3>
+                    </div>
+
+                    <p:dataTable id="datalist" value="#{informePagoAlumnoController.items}" var="item"
+                                 selectionMode="single" selection="#{informePagoAlumnoController.selected}"
+                                 paginator="true"
+                                 rowKey="#{item.id}"
+                                 rows="10"
+                                 paginatorPosition="bottom"
+                                 rowsPerPageTemplate="10,20,30"
+                                 emptyMessage="No se encontraron comprobantes para la cohorte seleccionada."
+                                 >
+                        
+                        <p:ajax event="rowSelect"   update="createButtonIPA editButtonIPA deleteButtonIPA"/>
+                        <p:ajax event="rowUnselect" update="createButtonIPA editButtonIPA deleteButtonIPA"/>
+
+                        <p:column headerText="ID" width="50" style="text-align: center;">
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column headerText="Cuota" width="80" style="text-align: center;">
+                            <h:outputText value="N° #{item.nroCuota}"/>
+                        </p:column>
+
+                        <p:column headerText="Descripción">
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>
+
+                        <p:column headerText="Fecha" width="120" style="text-align: center;">
+                            <h:outputText value="#{item.fecha}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Estado" width="150" style="text-align: center;">
+                            <h:panelGroup rendered="#{item.estadoComprobanteAlumno.name == 'PENDIENTE'}">
+                                <span class="status-badge status-pending">Pendiente</span>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{item.estadoComprobanteAlumno.name == 'APROBADO'}">
+                                <span class="status-badge status-approved">Aprobado</span>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{item.estadoComprobanteAlumno.name == 'RECHAZADO'}">
+                                <span class="status-badge status-rejected">Rechazado</span>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{item.estadoComprobanteAlumno.name != 'PENDIENTE' and item.estadoComprobanteAlumno.name != 'APROBADO' and item.estadoComprobanteAlumno.name != 'RECHAZADO'}">
+                                <span class="status-badge">#{item.estadoComprobanteAlumno.name}</span>
+                            </h:panelGroup>
+                        </p:column>
+
+                        <p:column headerText="Archivo" width="100" style="text-align: center;">
+                            <b:commandButton iconAwesome="fa-download" value="" 
+                                             action="#{informePagoAlumnoController.FileDownloadView(item)}"
+                                             look="link" style="color: var(--secondary-color); font-size: 1.2rem;">
+                                <p:fileDownload value="#{informePagoAlumnoController.file}"/>
+                            </b:commandButton>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <div style="display: flex; gap: 10px; justify-content: flex-start; padding: 10px;">
+                                <p:commandButton id="createButtonIPA" icon="ui-icon-plus" value="Informar Nuevo Pago" 
+                                                 styleClass="btn-modern"
+                                                 actionListener="#{informePagoAlumnoController.prepareCreate}" 
+                                                 update=":InformePagoAlumnoCreateForm" 
+                                                 oncomplete="PF('InformePagoAlumnoCreateDialog').show()"/>
+                                
+                                <p:commandButton id="editButtonIPA" icon="ui-icon-pencil" value="Modificar" 
+                                                 styleClass="btn-modern"
+                                                 update=":InformePagoAlumnoEditForm" 
+                                                 oncomplete="PF('InformePagoAlumnoEditDialog').show()" 
+                                                 disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}"/>
+                                
+                                <p:commandButton id="deleteButtonIPA" icon="ui-icon-trash" value="Eliminar" 
+                                                 styleClass="btn-modern"
+                                                 actionListener="#{informePagoAlumnoController.destroy}" 
+                                                 update=":frmPri:growl,datalist" 
+                                                 disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}"/>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                </div>
+
             <script>
 
                 let metodo = () =>{
@@ -247,8 +239,8 @@
        
               
 
-        </h:form>
-        
+            </h:form>
+        </b:container>
   <!-- Dialog de MP -->
 
         <p:dialog widgetVar="MercadoPagoDialog" 

@@ -9,28 +9,46 @@
                  xmlns:f="http://java.sun.com/jsf/core">
 
     <ui:define name="content">
-
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6 col-md-4 col-md-offset-4">
-                    <h1 class="text-center login-title">Ingreso de Alumnos - Humanidades</h1>
-                    <div class="account-wall">
-                        <p:graphicImage value="./Imagenes/LogoFacultadHumanidades.png" height="120" width="200" styleClass="profile-img"/>  
-
-
-                        <h:form id="login" styleClass="form-signin">
-
-                            <b:label text="DNI: "></b:label> 
-                            <b:inputText id="iDocumento" value="#{loginAlumnoBean.documento}" maxlength="8" size="8" type="number" required="true" requiredMessage="El Nro de Dni es Requerido"/>
-                            
-                            <p:messages showSummary="true"/>
-                            <div class="g-recaptcha" data-sitekey="6LdxXIgpAAAAALBFw_x2WqlnCEFvd6QfXFg2UQ0d" data-theme="transparent"></div><br/>
-                            <b:commandButton value="Ingresar" styleClass="btn btn-lg btn-primary btn-block" 
-                                             action="#{loginAlumnoBean.ingresar()}" ajax="false"/>
-                        </h:form> 
-                    </div>
-
+        <h:outputStylesheet library="css" name="modern_alumno.css"/>
+        
+        <div class="login-container">
+            <div class="login-card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <p:graphicImage value="./Imagenes/LogoFacultadHumanidades.png" height="100" />
+                    <h1 class="login-title" style="margin-top: 1rem; font-size: 1.5rem;">Ingreso de Alumnos</h1>
+                    <p style="color: var(--text-muted);">Facultad de Humanidades</p>
                 </div>
+
+                <h:form id="login">
+                    <div style="margin-bottom: 1.5rem;">
+                        <b:label text="Número de DNI" style="margin-bottom: 0.5rem; display: block; color: var(--text-muted);"/> 
+                        <b:inputText id="iDocumento" value="#{loginAlumnoBean.documento}" 
+                                     maxlength="8" 
+                                     placeholder="Ej: 30123456"
+                                     style="border-radius: 8px; padding: 12px;"
+                                     required="true" 
+                                     requiredMessage="El Nro de Dni es Requerido">
+                            <f:facet name="prepend">
+                                <b:iconAwesome name="user" />
+                            </f:facet>
+                        </b:inputText>
+                    </div>
+                    
+                    <p:messages showSummary="true" style="margin-bottom: 1rem;"/>
+                    
+                    <div class="g-recaptcha" data-sitekey="6LdxXIgpAAAAALBFw_x2WqlnCEFvd6QfXFg2UQ0d" 
+                         style="transform:scale(0.85);-webkit-transform:scale(0.85);transform-origin:0 0; margin-bottom: 1rem;"></div>
+                    
+                    <b:commandButton value="Ingresar al Portal" 
+                                     styleClass="btn-modern btn-primary btn-block" 
+                                     style="width: 100%; padding: 12px; font-size: 1.1rem; background-color: var(--primary-color) !important; border: none;"
+                                     action="#{loginAlumnoBean.ingresar()}" 
+                                     ajax="false"/>
+                    
+                    <div style="margin-top: 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                        © 2026 Universidad Nacional de Catamarca
+                    </div>
+                </h:form> 
             </div>
         </div>
     </ui:define>

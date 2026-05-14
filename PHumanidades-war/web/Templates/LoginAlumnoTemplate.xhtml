@@ -87,10 +87,17 @@
             </h:form>
             <ui:insert name="content">Content</ui:insert>
 
-            <b:navBar fixed="bottom" static="false"  >
-                <b:navbarLinks pull="left"><img src="./Imagenes/LogoFacultadHumanidades.png" alt="" height="50px" align="left" />
-                </b:navbarLinks>   <b:navbarLinks pull="right"><p> Facultad de Humanidades - Universidad Nacional de Catamarca<br/>Avda Belgrano Nº 300 
-                        <br/> San Fernando del Valle de Catamarca</p></b:navbarLinks> 
+            <b:navBar fixed="bottom" static="false" sticky="false" style="border-top: 1px solid #e5e7eb; background: white; padding: 10px 0;">
+                <b:container>
+                    <b:navbarLinks pull="left" style="display: flex; align-items: center;">
+                        <img src="./Imagenes/LogoFacultadHumanidades.png" alt="" height="40px" style="margin-right: 15px;" />
+                        <span style="font-size: 0.9rem; color: var(--text-muted);">Universidad Nacional de Catamarca</span>
+                    </b:navbarLinks>
+                    <b:navbarLinks pull="right" style="text-align: right; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
+                        Avda Belgrano Nº 300<br/>
+                        San Fernando del Valle de Catamarca
+                    </b:navbarLinks> 
+                </b:container>
             </b:navBar>
         </f:view>
     </h:body>

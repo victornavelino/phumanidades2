@@ -127,11 +127,11 @@
                         </p:column>
 
                         <p:column headerText="Archivo" width="100" style="text-align: center;">
-                            <b:commandButton iconAwesome="fa-download" value=""
-                                action="#{informePagoAlumnoController.FileDownloadView(item)}" look="link"
-                                style="color: var(--secondary-color); font-size: 1.2rem;">
+                            <p:commandButton ajax="false" icon="fa fa-download"
+                                actionListener="#{informePagoAlumnoController.FileDownloadView(item)}"
+                                styleClass="btn-download-icon">
                                 <p:fileDownload value="#{informePagoAlumnoController.file}" />
-                            </b:commandButton>
+                            </p:commandButton>
                         </p:column>
 
                         <f:facet name="footer">

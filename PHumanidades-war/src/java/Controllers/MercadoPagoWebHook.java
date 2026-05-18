@@ -148,16 +148,24 @@ public class MercadoPagoWebHook {
         if ("approved".equals(payment.getStatus())) {
             System.out.print("ENTRO IF Approved Metodo procesarPago con externalReference =" + externalReference);
             informePagoAlumno = new InformePagoAlumno();
+            
+            // OBTENEMOS ID DE ALUMNO Y COHORTE DESDE EXTERNALREFERENCE PRIMERO
             try {
-                comprobante = generadorComprobanteMP.generarComprobante(payment);
+                String[] ids = payment.getExternalReference().split("\\-");
+                this.alumno = alumnoFacadeLocal.find(Long.parseLong(ids[0]));
+                this.cohorte = cohorteFacadeLocal.find(Long.parseLong(ids[1]));
             } catch (Exception ex) {
-                System.out.println("Error Comprobante!!! cathc");
+                System.out.println("Error al parsear o buscar Alumno/Cohorte: " + ex.getMessage());
+                this.alumno = null;
+                this.cohorte = null;
+            }
+
+            try {
+                comprobante = GeneradorComprobanteMP.generarComprobante(payment, this.alumno, this.cohorte);
+            } catch (Exception ex) {
+                System.out.println("Error Comprobante!!! catch: " + ex.getMessage());
                 comprobante = null;
             }
-            //OBTENEMOS ID DE ALUMNO Y COHORTE DESDE EXTERNALREFERENCE
-            String[] ids = payment.getExternalReference().split("\\-");
-            this.alumno = alumnoFacadeLocal.find(Long.parseLong(ids[0]));
-            this.cohorte = cohorteFacadeLocal.find(Long.parseLong(ids[1]));
 
             //Seteamos valores
             informePagoAlumno.setAlumno(alumno);
@@ -170,7 +178,9 @@ public class MercadoPagoWebHook {
             informePagoAlumno.setFecha(new Date());
             informePagoAlumno.setPaymentId(paymentId);
             informePagoAlumno.setNombreComprobantePago("MercadoPago_" + paymentId + ".pdf");
-            informePagoAlumno.setComprobantePago(comprobante.toByteArray());
+            if (comprobante != null) {
+                informePagoAlumno.setComprobantePago(comprobante.toByteArray());
+            }
             informePagoAlumno.setExternalReference("MP");
 
             informePagoAlumnoFacade.create(informePagoAlumno);

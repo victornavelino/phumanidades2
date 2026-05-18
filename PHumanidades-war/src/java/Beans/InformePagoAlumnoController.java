@@ -404,7 +404,9 @@ public class InformePagoAlumnoController implements Serializable {
     private StreamedContent file;
 
     public void FileDownloadView(InformePagoAlumno informePagoAlumno) {
-        System.out.println("ESTADOOOOOOOOOO: " + selected.getEstadoComprobanteAlumno().name());
+        if (informePagoAlumno != null && informePagoAlumno.getEstadoComprobanteAlumno() != null) {
+            System.out.println("ESTADOOOOOOOOOO: " + informePagoAlumno.getEstadoComprobanteAlumno().name());
+        }
         InputStream stream = new ByteArrayInputStream(informePagoAlumno.getComprobantePago());
         file = new DefaultStreamedContent(stream, "application/octet-stream", informePagoAlumno.getNombreComprobantePago());
 

@@ -115,7 +115,7 @@ fi
 cd ..
 
 # Desplegar en servidor remoto
-echo -e "${YELLOW}[2/2] Enviando archivo WAR al servidor remoto directamente...${NC}"
+echo -e "${YELLOW}[2/2] Enviando archivo WAR al servidor remoto...${NC}"
 WAR_FILE="$PROJECT_WAR_DIR/dist/PHumanidades-war.war"
 WAR_FILENAME=$(basename "$WAR_FILE")
 
@@ -125,11 +125,44 @@ if [ ! -f "$WAR_FILE" ]; then
     exit 1
 fi
 
-echo -e "${GRAY}Conectando a ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}...${NC}"
-scp -P "$REMOTE_PORT" "$WAR_FILE" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/$WAR_FILENAME"
+echo -e "${GRAY}Estableciendo conexión maestra con ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}...${NC}"
+SSH_SOCKET="/tmp/ssh_mux_${REMOTE_HOST}_${REMOTE_PORT}_${REMOTE_USER}"
+
+# Función de limpieza para cerrar la conexión compartida al terminar
+cleanup() {
+    if [ -S "$SSH_SOCKET" ]; then
+        echo -e "${GRAY}Cerrando conexión SSH maestra...${NC}"
+        ssh -O exit -S "$SSH_SOCKET" -p "$REMOTE_PORT" "${REMOTE_USER}@${REMOTE_HOST}" 2>/dev/null
+    fi
+}
+trap cleanup EXIT
+
+# Iniciar la conexión maestra (esta pedirá la contraseña del usuario huma una sola vez)
+ssh -M -S "$SSH_SOCKET" -fnN -p "$REMOTE_PORT" "${REMOTE_USER}@${REMOTE_HOST}"
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error al establecer la conexión SSH maestra.${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Conexión SSH establecida con éxito.${NC}"
+
+# 1. Copiar a /tmp del servidor remoto usando la conexión compartida (sin pedir contraseña)
+echo -e "${GRAY}Copiando archivo WAR a /tmp en el servidor remoto...${NC}"
+scp -o ControlPath="$SSH_SOCKET" -P "$REMOTE_PORT" "$WAR_FILE" "${REMOTE_USER}@${REMOTE_HOST}:/tmp/$WAR_FILENAME"
 
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Error al copiar el archivo directamente. Asegúrate de haber otorgado los permisos con chmod 777 en el servidor remoto.${NC}"
+    echo -e "${RED}Error al copiar el archivo a /tmp en el servidor remoto.${NC}"
+    exit 1
+fi
+
+# 2. Mover a la ruta de autodeploy elevando a root con su -c usando la conexión compartida
+# (Esta pedirá la contraseña de root directamente y de forma clara)
+echo -e "${YELLOW}Elevando privilegios con su -c para mover el archivo a la carpeta autodeploy...${NC}"
+echo -e "${CYAN}Por favor, ingresa la contraseña de ROOT cuando se te solicite a continuación:${NC}"
+ssh -t -o ControlPath="$SSH_SOCKET" -p "$REMOTE_PORT" "${REMOTE_USER}@${REMOTE_HOST}" "su -c 'mv /tmp/$WAR_FILENAME $REMOTE_PATH/$WAR_FILENAME && chmod 777 $REMOTE_PATH/$WAR_FILENAME'"
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error al mover el archivo a la carpeta autodeploy con su -c.${NC}"
     exit 1
 fi
 

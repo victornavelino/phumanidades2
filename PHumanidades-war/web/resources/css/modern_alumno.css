@@ -316,3 +316,24 @@ body {
     color: var(--success);
 }
 
+/* Botón de descarga de archivo */
+.btn-download-icon {
+    background: transparent !important;
+    border: none !important;
+    color: var(--secondary-color) !important;
+    font-size: 1.25rem !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    padding: 0 !important;
+}
+
+.btn-download-icon:hover {
+    color: var(--primary-color) !important;
+    transform: scale(1.1);
+}
+
+/* Inversión a color blanco cuando la fila está seleccionada */
+.ui-state-highlight .btn-download-icon {
+    color: #ffffff !important;
+}
+

@@ -97,24 +97,27 @@ public class MercadoPagoBean implements Serializable {
     public void setCohorte(Cohorte cohorte) {
         this.cohorte = cohorte;
     }
-    
+
     public void cargarPreferencia(Cohorte cohorte, Alumno alumno) {
-        //seteamos datos iniciales para el Pago del alumno previo pago desde MP
-        InformePagoAlumno informePagoAlumno= new InformePagoAlumno();
+        // seteamos datos iniciales para el Pago del alumno previo pago desde MP
+        InformePagoAlumno informePagoAlumno = new InformePagoAlumno();
         informePagoAlumno.setFecha(new Date());
-        informePagoAlumno.setExternalReference(alumno.getId() + "-" +cohorte.getId());
+        informePagoAlumno.setExternalReference(alumno.getId() + "-" + cohorte.getId());
         this.setPreferenceId(new String());
         System.out.println("Entro CargarPreferencia");
         System.out.print("Cohorte nombre = " + cohorte.getDescripcion());
         System.out.println("CohorteID= " + cohorte.getId());
         System.out.println("Token configurado: " + MercadoPagoConfig.getAccessToken());
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://dev-huma.unca.edu.ar/paginas/informePagoAlumno/List.xhtml?faces-redirect=true&update=true")
-                .pending("https://dev-huma.unca.edu.ar/paginas/informePagoAlumno/List.xhtml?faces-redirect=true&update=true")
-                .failure("https://dev-huma.unca.edu.ar/paginas/informePagoAlumno/List.xhtml?faces-redirect=true&update=true")
+                .success(
+                        "http://localhost:8080/PHumanidades-war/paginas/informePagoAlumno/List.xhtml?faces-redirect=true&update=true")
+                .pending(
+                        "http://localhost:8080/PHumanidades-war/paginas/informePagoAlumno/List.xhtml?faces-redirect=true&update=true")
+                .failure(
+                        "http://localhost:8080/PHumanidades-war/paginas/informePagoAlumno/List.xhtml?faces-redirect=true&update=true")
                 .build();
-        //configuramos ACCESS TOKEN (PRIVATE KEY)
-        //MercadoPagoConfig.setAccessToken("TEST-1576757908614312-022716-3193c51969313e661e2b166e757795a9-200964240");
+        // configuramos ACCESS TOKEN (PRIVATE KEY)
+        // MercadoPagoConfig.setAccessToken("TEST-1576757908614312-022716-3193c51969313e661e2b166e757795a9-200964240");
 
         PreferenceItemRequest itemRequest = null;
         itemRequest = PreferenceItemRequest.builder()
@@ -133,7 +136,7 @@ public class MercadoPagoBean implements Serializable {
                 .externalReference(informePagoAlumno.getExternalReference())
                 .notificationUrl("https://dev-huma.unca.edu.ar/api/webhooks/mercado-pago")
                 .backUrls(backUrls)
-                //.autoReturn("approved") 
+                // .autoReturn("approved")
                 .build();
         PreferenceClient client = new PreferenceClient();
         try {
@@ -144,14 +147,15 @@ public class MercadoPagoBean implements Serializable {
             System.out.println("Cargo preferencia metodo cargarPreferencia;: " + this.getPreferenceId());
             System.out.println("lista de preferencias=== " + preferenceRequest.getItems());
             System.out.println("REFERENCIA EXTERNA=== " + informePagoAlumno.getExternalReference());
-             // 3. Pre-guardar el registro
-//            informePagoAlumno.setEstado("PENDIENTE"); // Agrega este campo a tu entidad
-//            informePagoAlumno.setAlumno(alumno);
-//            informePagoAlumno.setCohorte(cohorte);
-//            informePagoAlumno.setEstadoComprobanteAlumno(EstadoComprobanteAlumno.PROCESANDO);
-//            informePagoAlumno.setDescripcion("Pago MercadoPago: "+cohorte.getDescripcion());
-//            informePagoAlumno.setCantidadCuotas(1);
-//            informePagoAlumnoFacade.create(informePagoAlumno);
+            // 3. Pre-guardar el registro
+            // informePagoAlumno.setEstado("PENDIENTE"); // Agrega este campo a tu entidad
+            // informePagoAlumno.setAlumno(alumno);
+            // informePagoAlumno.setCohorte(cohorte);
+            // informePagoAlumno.setEstadoComprobanteAlumno(EstadoComprobanteAlumno.PROCESANDO);
+            // informePagoAlumno.setDescripcion("Pago MercadoPago:
+            // "+cohorte.getDescripcion());
+            // informePagoAlumno.setCantidadCuotas(1);
+            // informePagoAlumnoFacade.create(informePagoAlumno);
 
         } catch (MPException ex) {
             Logger.getLogger(MercadoPagoBean.class.getName()).log(Level.SEVERE, null, ex);

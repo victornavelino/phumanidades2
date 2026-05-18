@@ -1,18 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
-                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                 template="../../Templates/paginasTemplate.xhtml"
-                 xmlns:p="http://primefaces.org/ui"
-                 xmlns:h="http://java.sun.com/jsf/html"
-                 xmlns:f="http://java.sun.com/jsf/core"
-                 xmlns:b="http://bootsfaces.net/ui"
-                 >
+<!DOCTYPE composition
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    template="../../Templates/paginasTemplate.xhtml" xmlns:p="http://primefaces.org/ui"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:b="http://bootsfaces.net/ui">
 
 
 
     <ui:define name="content">
-        <h:outputStylesheet library="css" name="modern_alumno.css"/>
+        <h:outputStylesheet library="css" name="modern_alumno.css" />
 
         <div class="header-section">
             <b:container>
@@ -22,7 +18,9 @@
                         <p style="opacity: 0.8; margin-top: 0.5rem;">Gestión de informes de pago y comprobantes</p>
                     </div>
                     <div style="text-align: right;">
-                        <h2 style="font-weight: 300; margin: 0;"><h:outputText value="#{loginAlumnoBean.alumno}"/></h2>
+                        <h2 style="font-weight: 300; margin: 0;">
+                            <h:outputText value="#{loginAlumnoBean.alumno}" />
+                        </h2>
                         <span class="status-badge status-approved">Sesión Activa</span>
                     </div>
                 </div>
@@ -32,50 +30,43 @@
 
         <b:container style="margin-top: -1rem; position: relative; z-index: 2;">
             <h:form id="informePagoAlumnoListForm">
-                
+
                 <!-- Sección de Cohortes y Pagos -->
                 <div class="dashboard-card">
                     <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
-                        <i class="fa fa-graduation-cap" style="font-size: 1.5rem; color: var(--primary-color); margin-right: 1rem;"></i>
+                        <i class="fa fa-graduation-cap"
+                            style="font-size: 1.5rem; color: var(--primary-color); margin-right: 1rem;"></i>
                         <h3 style="margin: 0; font-weight: 700;">Tus Carreras e Inscripciones</h3>
                     </div>
 
                     <p:panel id="pnCohortesConsulta">
-                        <p:dataTable id="dtCortesCobros"
-                                     value="#{cohorteLstBean.lstCohortesAlumnosConsulta}"
-                                     var="cort"
-                                     rowKey="#{cort.id}"
-                                     tableStyleClass="modern-table">
-                            
+                        <p:dataTable id="dtCortesCobros" value="#{cohorteLstBean.lstCohortesAlumnosConsulta}" var="cort"
+                            rowKey="#{cort.id}" tableStyleClass="modern-table">
+
                             <p:column headerText="Carrera" style="font-weight: 600;">
-                                <h:outputText value="#{cort.carrera.descripcion}"/>
+                                <h:outputText value="#{cort.carrera.descripcion}" />
                             </p:column>
-                            
+
                             <p:column headerText="Cohorte">
-                                <h:outputText value="#{cort.descripcion}"/>
+                                <h:outputText value="#{cort.descripcion}" />
                             </p:column>
-                            
+
                             <p:column headerText="Año" style="text-align: center; width: 80px;">
-                                <h:outputText value="#{cort.anio}"/>
+                                <h:outputText value="#{cort.anio}" />
                             </p:column>
-                            
+
                             <p:column headerText="Acciones" style="text-align: center; width: 200px;">
                                 <div style="display: flex; gap: 10px; justify-content: center;">
                                     <p:commandButton id="btnBuscar"
-                                                     actionListener="#{informePagoAlumnoController.obtenerComprobantesAlumno(loginAlumnoBean.alumno,cort)}"
-                                                     icon="ui-icon-search"
-                                                     title="Ver Comprobantes"
-                                                     styleClass="btn-modern"
-                                                     process="informePagoAlumnoListForm:datalist, @this"
-                                                     update="informePagoAlumnoListForm:datalist"/>
+                                        actionListener="#{informePagoAlumnoController.obtenerComprobantesAlumno(loginAlumnoBean.alumno,cort)}"
+                                        icon="ui-icon-search" title="Ver Comprobantes" styleClass="btn-modern"
+                                        process="informePagoAlumnoListForm:datalist, @this"
+                                        update="informePagoAlumnoListForm:datalist" />
 
-                                    <p:commandButton id="btnPagar" 
-                                                     icon="ui-icon-cart"
-                                                     value="Pagar Cuota"
-                                                     action="#{mercadoPagoBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
-                                                     styleClass="btn-modern btn-primary"
-                                                     oncomplete="PF('MercadoPagoDialog').show()"
-                                                     update=":idPreferencia, :mpDialog"/>
+                                    <p:commandButton id="btnPagar" icon="ui-icon-cart" value="Pagar Cuota"
+                                        action="#{mercadoPagoBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
+                                        styleClass="btn-modern btn-primary" oncomplete="PF('MercadoPagoDialog').show()"
+                                        update=":idPreferencia, :mpDialog" />
                                 </div>
                             </p:column>
                         </p:dataTable>
@@ -88,33 +79,29 @@
                 <!-- Listado de Comprobantes -->
                 <div class="dashboard-card">
                     <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
-                        <i class="fa fa-file-text" style="font-size: 1.5rem; color: var(--primary-color); margin-right: 1rem;"></i>
+                        <i class="fa fa-file-text"
+                            style="font-size: 1.5rem; color: var(--primary-color); margin-right: 1rem;"></i>
                         <h3 style="margin: 0; font-weight: 700;">Mis Comprobantes Informados</h3>
                     </div>
 
                     <p:dataTable id="datalist" value="#{informePagoAlumnoController.items}" var="item"
-                                 selectionMode="single" selection="#{informePagoAlumnoController.selected}"
-                                 paginator="true"
-                                 rowKey="#{item.id}"
-                                 rows="10"
-                                 paginatorPosition="bottom"
-                                 rowsPerPageTemplate="10,20,30"
-                                 emptyMessage="No se encontraron comprobantes para la cohorte seleccionada."
-                                 >
-                        
-                        <p:ajax event="rowSelect"   update="createButtonIPA editButtonIPA deleteButtonIPA"/>
-                        <p:ajax event="rowUnselect" update="createButtonIPA editButtonIPA deleteButtonIPA"/>
+                        selectionMode="single" selection="#{informePagoAlumnoController.selected}" paginator="true"
+                        rowKey="#{item.id}" rows="10" paginatorPosition="bottom" rowsPerPageTemplate="10,20,30"
+                        emptyMessage="No se encontraron comprobantes para la cohorte seleccionada.">
+
+                        <p:ajax event="rowSelect" update="createButtonIPA editButtonIPA deleteButtonIPA" />
+                        <p:ajax event="rowUnselect" update="createButtonIPA editButtonIPA deleteButtonIPA" />
 
                         <p:column headerText="ID" width="50" style="text-align: center;">
-                            <h:outputText value="#{item.id}"/>
+                            <h:outputText value="#{item.id}" />
                         </p:column>
 
                         <p:column headerText="Cuota" width="80" style="text-align: center;">
-                            <h:outputText value="N° #{item.nroCuota}"/>
+                            <h:outputText value="N° #{item.nroCuota}" />
                         </p:column>
 
                         <p:column headerText="Descripción">
-                            <h:outputText value="#{item.descripcion}"/>
+                            <h:outputText value="#{item.descripcion}" />
                         </p:column>
 
                         <p:column headerText="Fecha" width="120" style="text-align: center;">
@@ -133,135 +120,172 @@
                             <h:panelGroup rendered="#{item.estadoComprobanteAlumno.name == 'RECHAZADO'}">
                                 <span class="status-badge status-rejected">Rechazado</span>
                             </h:panelGroup>
-                            <h:panelGroup rendered="#{item.estadoComprobanteAlumno.name != 'PENDIENTE' and item.estadoComprobanteAlumno.name != 'APROBADO' and item.estadoComprobanteAlumno.name != 'RECHAZADO'}">
+                            <h:panelGroup
+                                rendered="#{item.estadoComprobanteAlumno.name != 'PENDIENTE' and item.estadoComprobanteAlumno.name != 'APROBADO' and item.estadoComprobanteAlumno.name != 'RECHAZADO'}">
                                 <span class="status-badge">#{item.estadoComprobanteAlumno.name}</span>
                             </h:panelGroup>
                         </p:column>
 
                         <p:column headerText="Archivo" width="100" style="text-align: center;">
-                            <b:commandButton iconAwesome="fa-download" value="" 
-                                             action="#{informePagoAlumnoController.FileDownloadView(item)}"
-                                             look="link" style="color: var(--secondary-color); font-size: 1.2rem;">
-                                <p:fileDownload value="#{informePagoAlumnoController.file}"/>
+                            <b:commandButton iconAwesome="fa-download" value=""
+                                action="#{informePagoAlumnoController.FileDownloadView(item)}" look="link"
+                                style="color: var(--secondary-color); font-size: 1.2rem;">
+                                <p:fileDownload value="#{informePagoAlumnoController.file}" />
                             </b:commandButton>
                         </p:column>
 
                         <f:facet name="footer">
                             <div style="display: flex; gap: 10px; justify-content: flex-start; padding: 10px;">
-                                <p:commandButton id="createButtonIPA" icon="ui-icon-plus" value="Informar Nuevo Pago" 
-                                                 styleClass="btn-modern"
-                                                 actionListener="#{informePagoAlumnoController.prepareCreate}" 
-                                                 update=":InformePagoAlumnoCreateForm" 
-                                                 oncomplete="PF('InformePagoAlumnoCreateDialog').show()"/>
-                                
-                                <p:commandButton id="editButtonIPA" icon="ui-icon-pencil" value="Modificar" 
-                                                 styleClass="btn-modern"
-                                                 update=":InformePagoAlumnoEditForm" 
-                                                 oncomplete="PF('InformePagoAlumnoEditDialog').show()" 
-                                                 disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}"/>
-                                
-                                <p:commandButton id="deleteButtonIPA" icon="ui-icon-trash" value="Eliminar" 
-                                                 styleClass="btn-modern"
-                                                 actionListener="#{informePagoAlumnoController.destroy}" 
-                                                 update=":frmPri:growl,datalist" 
-                                                 disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}"/>
+                                <p:commandButton id="createButtonIPA" icon="ui-icon-plus" value="Informar Nuevo Pago"
+                                    styleClass="btn-modern"
+                                    actionListener="#{informePagoAlumnoController.prepareCreate}"
+                                    update=":InformePagoAlumnoCreateForm"
+                                    oncomplete="PF('InformePagoAlumnoCreateDialog').show()" />
+
+                                <p:commandButton id="editButtonIPA" icon="ui-icon-pencil" value="Modificar"
+                                    styleClass="btn-modern" update=":InformePagoAlumnoEditForm"
+                                    oncomplete="PF('InformePagoAlumnoEditDialog').show()"
+                                    disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}" />
+
+                                <p:commandButton id="deleteButtonIPA" icon="ui-icon-trash" value="Eliminar"
+                                    styleClass="btn-modern" actionListener="#{informePagoAlumnoController.destroy}"
+                                    update=":frmPri:growl,datalist"
+                                    disabled="#{informePagoAlumnoController.esAprobado() || empty informePagoAlumnoController.selected}" />
                             </div>
                         </f:facet>
                     </p:dataTable>
                 </div>
 
-            <script>
+                <script>
 
-                let metodo = () =>{
-                    console.log("Hola metodo");
-                    console.log("Bean disponible?: ", #{mercadoPagoBean != null});
-                    console.log("PreferenceId existe?: ", #{mercadoPagoBean.preferenceId != null});
+                    let metodo = () => {
+                        console.log("Hola metodo");
+                        console.log("Bean disponible?: ", #{ mercadoPagoBean != null});
+                    console.log("PreferenceId existe?: ", #{ mercadoPagoBean.preferenceId != null });
                     //let pref = document.getElementById("hiddenPreferenceId").value;
                     const preferenciaXD = document.getElementById("idPreferencia").textContent;
                     console.log("preferencia=== ", valor); // Aquí debería aparecer el ID correctamente 
                 }
-                
-                
-                function crearBotonMercadoPago(){
-                    console.log("entro crearBotonMercadoPago")
-                    //BUSCAMOS Y ELIMINAMOS EL CONTENEDOR DEL BOTON DE MERCADO PAGO
-                    let containerId = "wallet_container" // ID único para la fila
-                    let container = document.getElementById(containerId);
-                    container.innerHTML = "";
-                    //CREAMOS EL NUEVO BOTON
-                    let mp;
-                    //let preferencia ="";
-                    console.log("entro crearboton MP")
-                    //preferencia = document.getElementById("hiddenPreferenceId").value;
-                    var preferencia = document.getElementById("idPreferencia").textContent;
-                    console.log("preferencia in  constante = " + preferencia)
-                    //console.log("cohorteId= "+cohorteId)
-                    // Inicializar el SDK de Mercado Pago  (PUBLIC KEY)
-                    mp = new MercadoPago('TEST-f6cbd094-4e69-49f3-b61e-ccf7c7f7ecd1', {
-                        locale: 'es-AR'
-                    });
-                    console.log('Objeto MP:', Object.keys(mp));
-                    // Crear el botón de pago en el contenedor designado
-                    
-                    mp.bricks().create("wallet", "wallet_container", {
-                        initialization: {
-                            preferenceId: preferencia,
-                            redirectMode: "blank",
-                        },
-                        customization: {
-                            texts: {
-                                valueProp: 'smart_option',
-                            },
-                        },
-                         callbacks: {
-                                 onReady: function() {
-                                      console.log("Brick renderizado correctamente");
-                                 },
-                                onError: function(error) { // Callback síncrono para errores
-                                        console.error(" Error en Brick:", {
-                                         code: error.code,
-                                         message: error.message,
-                                          details: error
-                                 });
-                                     },
-                                onSubmit: function() {
-                                            console.log("Formulario enviado (sin redirección automática)");
-                                            PF('MercadoPagoDialog').hide();
-                                            return Promise.resolve(); // Permite la redirección
-                                   }
-                            }
-                    });
-                    console.log("preferenciaaaaa = " + preferencia)
-                }
 
-            </script>
-   
-       
-              
+
+                    function crearBotonMercadoPago() {
+                        console.log("entro crearBotonMercadoPago")
+                        //BUSCAMOS Y ELIMINAMOS EL CONTENEDOR DEL BOTON DE MERCADO PAGO
+                        let containerId = "wallet_container" // ID único para la fila
+                        let container = document.getElementById(containerId);
+                        container.innerHTML = "";
+                        //CREAMOS EL NUEVO BOTON
+                        let mp;
+                        //let preferencia ="";
+                        console.log("entro crearboton MP")
+                        //preferencia = document.getElementById("hiddenPreferenceId").value;
+                        var preferencia = document.getElementById("idPreferencia").textContent;
+                        console.log("preferencia in  constante = " + preferencia)
+                        //console.log("cohorteId= "+cohorteId)
+                        // Inicializar el SDK de Mercado Pago  (PUBLIC KEY)
+                        mp = new MercadoPago('TEST-f6cbd094-4e69-49f3-b61e-ccf7c7f7ecd1', {
+                            locale: 'es-AR'
+                        });
+                        console.log('Objeto MP:', Object.keys(mp));
+                        // Crear el botón de pago en el contenedor designado
+
+                        mp.bricks().create("wallet", "wallet_container", {
+                            initialization: {
+                                preferenceId: preferencia,
+                                redirectMode: "blank",
+                            },
+                            customization: {
+                                texts: {
+                                    valueProp: 'smart_option',
+                                },
+                            },
+                            callbacks: {
+                                onReady: function () {
+                                    console.log("Brick renderizado correctamente");
+                                },
+                                onError: function (error) { // Callback síncrono para errores
+                                    console.error(" Error en Brick:", {
+                                        code: error.code,
+                                        message: error.message,
+                                        details: error
+                                    });
+                                },
+                                onSubmit: function () {
+                                    console.log("Formulario enviado (sin redirección automática)");
+                                    PF('MercadoPagoDialog').hide();
+                                    return Promise.resolve(); // Permite la redirección
+                                }
+                            }
+                        });
+                        console.log("preferenciaaaaa = " + preferencia)
+                    }
+
+                </script>
+
+
+
 
             </h:form>
         </b:container>
-  <!-- Dialog de MP -->
+        <!-- Dialog de MP -->
 
-        <p:dialog widgetVar="MercadoPagoDialog" 
-                  id="mpDialog"        
-          modal="true" 
-          resizable="false"
-          width="30%" 
-          height="auto"
-          onShow="crearBotonMercadoPago()"> <!-- Inicializa el Brick al abrir -->
-            <h:outputText id="descripcionPago" value="Usted esta por pagar: #{mercadoPagoBean.cohorte.descripcion}"/>
-            <br/>
-            <h:outputText id="montoPago" value="Total: #{mercadoPagoBean.cohorte.importeCuota}"/>
-             <!-- Contenedor del Brick (DEBE estar visible al inicializarse) -->
-            <div id="wallet_container" style="min-height: 10px;"></div>
-    
-           
-           </p:dialog>
-         
-        <ui:include src="Create.xhtml"/>
-        <ui:include src="Edit.xhtml"/>
-        <ui:include src="View.xhtml"/>
+        <p:dialog widgetVar="MercadoPagoDialog" id="mpDialog" modal="true" resizable="false" responsive="true"
+            width="450" styleClass="modern-dialog payment-dialog" header="Pago Seguro con Mercado Pago"
+            onShow="crearBotonMercadoPago()"> <!-- Inicializa el Brick al abrir -->
+
+            <div class="payment-container">
+                <!-- Resumen de Pago -->
+                <div class="payment-summary-card">
+                    <div class="summary-header">
+                        <i class="fa fa-receipt summary-icon"></i>
+                        <span class="summary-title">Resumen de la Transacción</span>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Concepto</span>
+                        <h:outputText id="descripcionPago" class="summary-value concept-value"
+                            value="#{mercadoPagoBean.cohorte.descripcion}" />
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Método de Pago</span>
+                        <span class="summary-value method-value"><i class="fa fa-wallet"></i> Mercado Pago</span>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-total-row">
+                        <span class="total-label">Monto Total</span>
+                        <span class="total-amount">
+                            <h:outputText id="montoPago" value="#{mercadoPagoBean.cohorte.importeCuota}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2"
+                                    minFractionDigits="2" locale="es-AR" />
+                            </h:outputText>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Separador / Indicación -->
+                <div class="payment-action-text">
+                    Complete el pago de forma segura a través de la pasarela oficial de Mercado Pago:
+                </div>
+
+                <!-- Contenedor del Brick (DEBE estar visible al inicializarse) -->
+                <div id="wallet_container" class="wallet-brick-container"></div>
+
+                <!-- Medidas de seguridad y footer -->
+                <div class="payment-footer-badge">
+                    <i class="fa fa-shield"></i>
+                    <span>Pagos encriptados con seguridad SSL</span>
+                </div>
+            </div>
+
+        </p:dialog>
+
+        <ui:include src="Create.xhtml" />
+        <ui:include src="Edit.xhtml" />
+        <ui:include src="View.xhtml" />
     </ui:define>
 </ui:composition>
-

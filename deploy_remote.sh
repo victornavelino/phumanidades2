@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Configuración de variables de entorno
-export ASADMIN="/home/hugo/glassfish-4.1/bin/asadmin"
+# Configuración de variables de entorno locales
 export ANT="ant"
 export PROJECT_WAR_DIR="PHumanidades-war"
 
@@ -53,19 +52,43 @@ YELLOW='\033[1;33m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+GRAY='\033[0;90m'
 
-echo -e "${CYAN}--- Iniciando Proceso de Despliegue (Linux) ---${NC}"
-
-# Verificar si Ant está instalado
-if ! command -v $ANT &> /dev/null; then
-    echo -e "${RED}Error: 'ant' no está instalado.${NC}"
-    echo -e "Puedes instalarlo con: ${YELLOW}sudo apt update && sudo apt install ant${NC}"
+# Cargar variables de entorno desde .env de forma robusta
+if [ -f .env ]; then
+    echo -e "${GRAY}Cargando variables desde .env...${NC}"
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Ignorar comentarios y líneas vacías
+        if [[ ! "$line" =~ ^# ]] && [[ ! -z "$line" ]]; then
+            # Limpiar retornos de carro de Windows (\r) y exportar
+            clean_line=$(echo "$line" | tr -d '\r')
+            export "$clean_line"
+        fi
+    done < .env
+else
+    echo -e "${RED}Error: Archivo .env no encontrado. Asegúrate de crearlo basándote en .env.example${NC}"
     exit 1
 fi
 
-# Asegurarse de que el dominio esté corriendo
-echo -e "${YELLOW}[1/4] Verificando servidor Glassfish...${NC}"
-$ASADMIN start-domain domain1
+# Configurar puerto por defecto
+if [ -z "$REMOTE_PORT" ]; then
+    REMOTE_PORT="22"
+fi
+
+# Validar variables obligatorias
+if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_HOST" ] || [ -z "$REMOTE_PATH" ]; then
+    echo -e "${RED}Error: Faltan variables de entorno obligatorias (REMOTE_USER, REMOTE_HOST, REMOTE_PATH) en el archivo .env${NC}"
+    exit 1
+fi
+
+echo -e "${CYAN}--- Iniciando Proceso de Despliegue Remoto (Debian) ---${NC}"
+
+# Verificar si Ant está instalado
+if ! command -v $ANT &> /dev/null; then
+    echo -e "${RED}Error: '$ANT' no está instalado.${NC}"
+    echo -e "Puedes instalarlo con: ${YELLOW}sudo apt update && sudo apt install ant${NC}"
+    exit 1
+fi
 
 # Buscar la librería CopyLibs de NetBeans y definir argumentos para Ant
 export GLASSFISH_HOME="/home/hugo/glassfish-4.1"
@@ -81,8 +104,8 @@ if [ -n "$NB_PROPERTIES" ]; then
     ANT_ARGS="-propertyfile $NB_PROPERTIES $ANT_ARGS"
 fi
 
-# Compilar el modulo WAR
-echo -e "${YELLOW}[2/4] Compilando modulo WAR...${NC}"
+# Compilar el módulo WAR
+echo -e "${YELLOW}[1/2] Compilando módulo WAR...${NC}"
 cd $PROJECT_WAR_DIR
 $ANT $ANT_ARGS dist
 if [ $? -ne 0 ]; then
@@ -91,31 +114,25 @@ if [ $? -ne 0 ]; then
 fi
 cd ..
 
-# Desplegar en Glassfish
-echo -e "${YELLOW}[3/4] Desplegando archivo WAR...${NC}"
+# Desplegar en servidor remoto
+echo -e "${YELLOW}[2/2] Enviando archivo WAR al servidor remoto directamente...${NC}"
 WAR_FILE="$PROJECT_WAR_DIR/dist/PHumanidades-war.war"
-$ASADMIN deploy --force=true "$WAR_FILE"
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Error en el despliegue${NC}"
+WAR_FILENAME=$(basename "$WAR_FILE")
+
+# Verificar que el archivo compilado exista antes de intentar enviarlo
+if [ ! -f "$WAR_FILE" ]; then
+    echo -e "${RED}Error: No se encontró el archivo compilado en '$WAR_FILE'${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}[4/4] ¡Éxito!${NC}"
-echo -e "${CYAN}URL de la aplicación: http://localhost:8080/PHumanidades-war${NC}"
+echo -e "${GRAY}Conectando a ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}...${NC}"
+scp -P "$REMOTE_PORT" "$WAR_FILE" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/$WAR_FILENAME"
 
-# Mostrar Logs al finalizar
-echo -e "\n--- Iniciando visualización de logs (Presiona Ctrl+C para detener y apagar el servidor) ---"
-LOG_FILE="/home/hugo/glassfish-4.1/glassfish/domains/domain1/logs/server.log"
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error al copiar el archivo directamente. Asegúrate de haber otorgado los permisos con chmod 777 en el servidor remoto.${NC}"
+    exit 1
+fi
 
-# Función para apagar el servidor al salir
-cleanup() {
-    echo -e "\n${YELLOW}--- Deteniendo servidor Glassfish... ---${NC}"
-    $ASADMIN stop-domain domain1
-    echo -e "${CYAN}--- Proceso finalizado ---${NC}"
-    exit
-}
-
-trap cleanup SIGINT
-
-# Seguimos el log filtrando ruido innecesario
-tail -f $LOG_FILE | grep -E --line-buffered "PHumanidades|SEVERE|WARNING|stdout|stderr" | grep -vE "org.jboss.weld|org.glassfish.tyrus|javax.enterprise.resource"
+echo -e ""
+echo -e "${GREEN}¡Éxito! Archivo WAR copiado directamente a la carpeta de autodeploy de Glassfish.${NC}"
+echo -e "${CYAN}Glassfish en el servidor remoto debería detectarlo y redesplegarlo automáticamente.${NC}"

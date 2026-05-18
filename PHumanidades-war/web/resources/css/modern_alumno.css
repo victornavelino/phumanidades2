@@ -133,3 +133,186 @@ body {
     margin-bottom: 1.5rem;
     text-align: center;
 }
+
+/* Dialogs & Modals Modern Styling */
+.ui-dialog.modern-dialog {
+    border-radius: var(--radius) !important;
+    border: none !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+.ui-dialog.modern-dialog .ui-dialog-titlebar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 1.25rem 1.5rem !important;
+    font-weight: 700 !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+
+.ui-dialog.modern-dialog .ui-dialog-title {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+}
+
+.ui-dialog.modern-dialog .ui-dialog-titlebar-close {
+    color: white !important;
+    margin: 0 !important;
+    padding: 4px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 50% !important;
+    border: none !important;
+    transition: all 0.2s;
+}
+
+.ui-dialog.modern-dialog .ui-dialog-titlebar-close:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.05);
+}
+
+.ui-dialog.modern-dialog .ui-dialog-titlebar-close span {
+    background-image: none !important;
+    color: white !important;
+    text-indent: 0 !important;
+}
+
+.ui-dialog.modern-dialog .ui-dialog-titlebar-close span::before {
+    content: '×';
+    font-size: 1.25rem;
+    line-height: 1;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+}
+
+.ui-dialog.modern-dialog .ui-dialog-content {
+    background-color: var(--bg-color) !important;
+    padding: 1.5rem !important;
+}
+
+/* Payment Dialog Styles */
+.payment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.payment-summary-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e2e8f0;
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.summary-icon {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+}
+
+.summary-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.summary-divider {
+    height: 1px;
+    background-color: #e2e8f0;
+    margin: 0.75rem 0;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.summary-label {
+    color: var(--text-muted);
+}
+
+.summary-value {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.concept-value {
+    max-width: 60%;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.method-value {
+    color: #009ee3; /* Mercado Pago Blue */
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 700;
+}
+
+.summary-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.total-label {
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+.total-amount {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--success);
+}
+
+.payment-action-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.4;
+    padding: 0 0.5rem;
+}
+
+.wallet-brick-container {
+    min-height: 50px;
+    transition: all 0.3s ease;
+}
+
+.payment-footer-badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background-color: #f1f5f9;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-top: 0.25rem;
+}
+
+.payment-footer-badge i {
+    color: var(--success);
+}
+

@@ -37,33 +37,44 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Verificar si Java 8 está instalado en la ruta especificada o buscar alternativas
-check_java8() {
-    if [ -d "$1" ] && [ -x "$1/bin/java" ]; then
-        if "$1/bin/java" -version 2>&1 | grep -q "1.8"; then
-            return 0
-        fi
+# Auto-detectar Java 8 (JDK 1.8) que es requerido por Glassfish 4.1 y Ant
+detect_java8() {
+    # 1. Probar la variable JAVA_HOME actual si ya está configurada y es Java 8
+    if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ] && "$JAVA_HOME/bin/java" -version 2>&1 | grep -q "1.8"; then
+        return 0
     fi
-    return 1
-}
-
-if ! check_java8 "$JAVA_HOME"; then
-    # Intentar buscar otras rutas comunes de Java 8
-    JAVA_FOUND=false
-    for path in "/usr/lib/jvm/java-8-openjdk-amd64" "/usr/lib/jvm/java-1.8.0-openjdk-amd64" "/usr/lib/jvm"; do
-        if check_java8 "$path"; then
+    
+    # 2. Rutas comunes en Debian/Ubuntu para JDK 1.8 (incluyendo jdk1.8.0_* del usuario)
+    for path in "/usr/lib/jvm/jdk1.8.0_202" /usr/lib/jvm/jdk1.8.0_* "/usr/lib/jvm/java-8-openjdk-amd64" "/usr/lib/jvm/java-1.8.0-openjdk-amd64"; do
+        if [ -d "$path" ] && [ -x "$path/bin/java" ] && "$path/bin/java" -version 2>&1 | grep -q "1.8"; then
             export JAVA_HOME="$path"
-            JAVA_FOUND=true
-            break
+            return 0
         fi
     done
 
-    if [ "$JAVA_FOUND" = false ]; then
-        echo -e "${RED}Error: No se encontró Java 8.${NC}"
-        echo -e "Ruta intentada por defecto: $JAVA_HOME"
-        echo -e "Por favor, instálalo con: ${YELLOW}sudo apt install openjdk-8-jdk${NC}"
-        exit 1
+    # 3. Detectar a través del comando 'java' del sistema si apunta a una versión 1.8
+    local sys_java=$(readlink -f $(which java 2>/dev/null) 2>/dev/null)
+    if [ -n "$sys_java" ] && "$sys_java" -version 2>&1 | grep -q "1.8"; then
+        # Si apunta a .../jre/bin/java, el JDK está en el directorio superior de la jre
+        local possible_home=$(dirname $(dirname "$sys_java"))
+        if [[ "$possible_home" == */jre ]]; then
+            possible_home=$(dirname "$possible_home")
+        fi
+        if [ -x "$possible_home/bin/java" ]; then
+            export JAVA_HOME="$possible_home"
+            return 0
+        fi
     fi
+
+    return 1
+}
+
+if ! detect_java8; then
+    echo -e "${RED}Error: No se encontró una instalación válida de Java 8 (JDK 1.8).${NC}"
+    echo -e "Glassfish 4.1 requiere Java 8 para funcionar y compilar correctamente."
+    echo -e "Por favor, instale Java 8 o configure la variable de entorno JAVA_HOME."
+    echo -e "Puedes instalarlo con: ${YELLOW}sudo apt install openjdk-8-jdk${NC}"
+    exit 1
 fi
 
 # Exportar el binario de Java 8 al PATH para que asadmin lo use

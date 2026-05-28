@@ -28,6 +28,14 @@ import javax.faces.context.FacesContext;
 
 import org.apache.poi.ss.usermodel.*;
 import org.primefaces.model.UploadedFile;
+// Imports básicos de Apache POI
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.DateUtil;
 
 @ManagedBean
 @SessionScoped
@@ -80,7 +88,8 @@ public class ImportarInscripcionesBean implements Serializable {
 
             if (sheet.getPhysicalNumberOfRows() < 2) {
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "El archivo Excel está vacío o no contiene filas de datos."));
+                        new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia",
+                                "El archivo Excel está vacío o no contiene filas de datos."));
                 return;
             }
 
@@ -97,7 +106,7 @@ public class ImportarInscripcionesBean implements Serializable {
 
             if (idxDni == -1 || idxCohorte == -1) {
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Columnas", 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Columnas",
                                 "No se pudieron mapear las columnas obligatorias (DNI y Cohorte). Verifique los encabezados del archivo."));
                 return;
             }
@@ -127,7 +136,8 @@ public class ImportarInscripcionesBean implements Serializable {
                 Cohorte cohorte = findCohorte(cohorteStr, allCohortes);
                 if (cohorte == null) {
                     errores++;
-                    logErrores.append("Fila ").append(i + 1).append(": Cohorte '").append(cohorteStr).append("' no encontrada. <br/>");
+                    logErrores.append("Fila ").append(i + 1).append(": Cohorte '").append(cohorteStr)
+                            .append("' no encontrada. <br/>");
                     continue;
                 }
 
@@ -148,7 +158,7 @@ public class ImportarInscripcionesBean implements Serializable {
                         if (!emailVal.isEmpty()) {
                             List<CorreoElectronico> emails = new ArrayList<>();
                             CorreoElectronico email = new CorreoElectronico();
-                            email.setCorreoElectronico(emailVal);
+                            email.setDireccion(emailVal);
                             emails.add(email);
                             alumno.setCorreosElectronicos(emails);
                         }
@@ -174,7 +184,7 @@ public class ImportarInscripcionesBean implements Serializable {
                             if (!emailVal.isEmpty()) {
                                 List<CorreoElectronico> emails = new ArrayList<>();
                                 CorreoElectronico email = new CorreoElectronico();
-                                email.setCorreoElectronico(emailVal);
+                                email.setDireccion(emailVal);
                                 emails.add(email);
                                 alumno.setCorreosElectronicos(emails);
                                 editNeeded = true;
@@ -213,10 +223,10 @@ public class ImportarInscripcionesBean implements Serializable {
                         inscripcion.setAlumno(alumno);
                         inscripcion.setCohorte(cohorte);
                         inscripcion.setActivo(true);
-                        
+
                         Date fecha = idxFechaIns != -1 ? parseDate(row.getCell(idxFechaIns)) : new Date();
                         inscripcion.setFechaInscripcion(fecha);
-                        
+
                         String mat = idxMatricula != -1 ? getCellValueAsString(row.getCell(idxMatricula)) : "";
                         inscripcion.setMatricula(mat);
 
@@ -227,7 +237,8 @@ public class ImportarInscripcionesBean implements Serializable {
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error al importar fila " + (i + 1), e);
                     errores++;
-                    logErrores.append("Fila ").append(i + 1).append(": Error al registrar Alumno/Inscripción: ").append(e.getMessage()).append("<br/>");
+                    logErrores.append("Fila ").append(i + 1).append(": Error al registrar Alumno/Inscripción: ")
+                            .append(e.getMessage()).append("<br/>");
                 }
             }
 
@@ -238,10 +249,10 @@ public class ImportarInscripcionesBean implements Serializable {
 
             String summary = String.format(
                     "Procesamiento Finalizado.<br/>" +
-                    "- Alumnos Nuevos: %d<br/>" +
-                    "- Inscripciones Nuevas: %d<br/>" +
-                    "- Fila Omitidas (ya inscriptos): %d<br/>" +
-                    "- Filas con errores: %d", 
+                            "- Alumnos Nuevos: %d<br/>" +
+                            "- Inscripciones Nuevas: %d<br/>" +
+                            "- Fila Omitidas (ya inscriptos): %d<br/>" +
+                            "- Filas con errores: %d",
                     creadosAlumnos, creadasInscripciones, omitidos, errores);
 
             FacesContext.getCurrentInstance().addMessage(null,
@@ -255,15 +266,10 @@ public class ImportarInscripcionesBean implements Serializable {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error general en la importación de Excel", e);
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Importación", "No se pudo procesar el archivo Excel: " + e.getMessage()));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Importación",
+                            "No se pudo procesar el archivo Excel: " + e.getMessage()));
         } finally {
-            if (workbook != null) {
-                try {
-                    workbook.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            }
+            // POI 3.7 Workbook doesn't implement Closeable / close() method
         }
     }
 
@@ -278,7 +284,8 @@ public class ImportarInscripcionesBean implements Serializable {
                 String normalizedVal = normalizeString(val);
                 for (String alias : aliases) {
                     String normalizedAlias = normalizeString(alias);
-                    if (normalizedVal.equals(normalizedAlias) || normalizedVal.contains(normalizedAlias) || normalizedAlias.contains(normalizedVal)) {
+                    if (normalizedVal.equals(normalizedAlias) || normalizedVal.contains(normalizedAlias)
+                            || normalizedAlias.contains(normalizedVal)) {
                         return i;
                     }
                 }
@@ -351,7 +358,7 @@ public class ImportarInscripcionesBean implements Serializable {
         if (str == null || str.trim().isEmpty()) {
             return new Date();
         }
-        String[] patterns = {"dd/MM/yyyy", "yyyy-MM-dd", "dd-MM-yyyy", "d/M/yyyy", "yyyy/MM/dd"};
+        String[] patterns = { "dd/MM/yyyy", "yyyy-MM-dd", "dd-MM-yyyy", "d/M/yyyy", "yyyy/MM/dd" };
         for (String pattern : patterns) {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat(pattern);

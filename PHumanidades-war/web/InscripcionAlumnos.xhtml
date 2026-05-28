@@ -113,6 +113,9 @@
             <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">
                 <p:printer target="dtInscripciones" />
             </p:commandButton>
+
+            <p:commandButton value="Importar Excel" icon="ui-icon-arrowthick-1-n"
+                             onclick="PF('dlgImportarExcel').show();" type="button" />
         </p>
         <p:messages autoUpdate="true"/>
         
@@ -198,5 +201,16 @@
                 </h:outputText>
             </p:column>  
         </p:dataTable>
+
+        <p:dialog id="dImportarExcel" widgetVar="dlgImportarExcel" header="Importar Inscripciones desde Excel" modal="true" width="500">
+            <h:panelGrid columns="1" style="margin-bottom:10px">
+                <p:outputLabel value="Seleccione el archivo Excel (.xls, .xlsx):" />
+                <p:fileUpload id="fileExcel" value="#{importarInscripcionesBean.file}"
+                              mode="simple" skinSimple="true" label="Elegir Archivo"/>
+            </h:panelGrid>
+            <p:commandButton value="Importar" actionListener="#{importarInscripcionesBean.importar}"
+                             ajax="false" update=":frmPri:dtInscripciones" styleClass="boton" />
+            <p:commandButton value="Cancelar" onclick="PF('dlgImportarExcel').hide();" type="button" styleClass="boton" />
+        </p:dialog>
     </ui:define>
 </ui:composition>

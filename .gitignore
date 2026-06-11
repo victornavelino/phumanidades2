@@ -7,3 +7,4 @@
 /PHumanidades-ejb/dist/
 /PHumanidades-war/dist/
 /dist/
+.env

@@ -117,5 +117,5 @@ cleanup() {
 
 trap cleanup SIGINT
 
-# Seguimos el log filtrando ruido innecesario
-tail -f $LOG_FILE | grep -E --line-buffered "PHumanidades|SEVERE|WARNING|stdout|stderr" | grep -vE "org.jboss.weld|org.glassfish.tyrus|javax.enterprise.resource"
+# Seguimos el log directamente
+tail -f $LOG_FILE

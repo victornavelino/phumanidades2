@@ -57,6 +57,15 @@ public class ImportarInscripcionesBean implements Serializable {
     private InscripcionAlumnosLstBean inscripcionAlumnosLstBean;
 
     private UploadedFile file;
+    private Cohorte cohorteSeleccionada;
+
+    public Cohorte getCohorteSeleccionada() {
+        return cohorteSeleccionada;
+    }
+
+    public void setCohorteSeleccionada(Cohorte cohorteSeleccionada) {
+        this.cohorteSeleccionada = cohorteSeleccionada;
+    }
 
     public UploadedFile getFile() {
         return file;
@@ -75,11 +84,21 @@ public class ImportarInscripcionesBean implements Serializable {
     }
 
     public void importar() {
+        if (cohorteSeleccionada == null) {
+            System.out.println("PHumanidades - Importador: Error de Validación. Cohorte de destino no seleccionada.");
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Validación",
+                            "Debe seleccionar una cohorte para realizar la importación."));
+            return;
+        }
+
         if (file == null) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar un archivo Excel."));
             return;
         }
+
+        System.out.println("PHumanidades - Importador: Iniciando proceso de importación del archivo: " + file.getFileName());
 
         Workbook workbook = null;
         try {
@@ -87,6 +106,7 @@ public class ImportarInscripcionesBean implements Serializable {
             Sheet sheet = workbook.getSheetAt(0);
 
             if (sheet.getPhysicalNumberOfRows() < 2) {
+                System.out.println("PHumanidades - Importador: El archivo Excel está vacío o no contiene filas de datos.");
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia",
                                 "El archivo Excel está vacío o no contiene filas de datos."));
@@ -104,10 +124,14 @@ public class ImportarInscripcionesBean implements Serializable {
             int idxMatricula = getColumnIndex(headerRow, "matricula/resolucion", "matricula");
             int idxCohorte = getColumnIndex(headerRow, "cohorte");
 
-            if (idxDni == -1 || idxCohorte == -1) {
+            System.out.println("PHumanidades - Importador: Mapeo de columnas: DNI=" + idxDni + ", Cohorte=" + idxCohorte + ", Nombre=" + idxNombre + ", Apellido=" + idxApellido);
+
+            // The cohorte column in Excel is only required if no cohorte is selected in the dialog
+            if (idxDni == -1 || (cohorteSeleccionada == null && idxCohorte == -1)) {
+                System.out.println("PHumanidades - Importador: Error de Columnas. No se pudieron mapear las columnas obligatorias (DNI y/o Cohorte).");
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Columnas",
-                                "No se pudieron mapear las columnas obligatorias (DNI y Cohorte). Verifique los encabezados del archivo."));
+                                "No se pudieron mapear las columnas obligatorias (DNI y/o Cohorte). Verifique los encabezados del archivo."));
                 return;
             }
 
@@ -132,12 +156,15 @@ public class ImportarInscripcionesBean implements Serializable {
                     continue;
                 }
 
-                String cohorteStr = idxCohorte != -1 ? getCellValueAsString(row.getCell(idxCohorte)) : "";
-                Cohorte cohorte = findCohorte(cohorteStr, allCohortes);
+                Cohorte cohorte = cohorteSeleccionada;
+                if (cohorte == null) {
+                    String cohorteStr = idxCohorte != -1 ? getCellValueAsString(row.getCell(idxCohorte)) : "";
+                    cohorte = findCohorte(cohorteStr, allCohortes);
+                }
+                
                 if (cohorte == null) {
                     errores++;
-                    logErrores.append("Fila ").append(i + 1).append(": Cohorte '").append(cohorteStr)
-                            .append("' no encontrada. <br/>");
+                    logErrores.append("Fila ").append(i + 1).append(": Cohorte no especificada o no encontrada. <br/>");
                     continue;
                 }
 
@@ -152,6 +179,8 @@ public class ImportarInscripcionesBean implements Serializable {
                         alumno.setApellido(idxApellido != -1 ? getCellValueAsString(row.getCell(idxApellido)) : "");
                         alumno.setCalidad(Calidad.ACTIVO);
                         alumno.setCondicion(Condicion.REGULAR);
+
+                        System.out.println("PHumanidades - Importador: Registrando alumno nuevo DNI: " + dni + " (" + alumno.getApellido() + ", " + alumno.getNombre() + ")");
 
                         // Email
                         String emailVal = idxEmail != -1 ? getCellValueAsString(row.getCell(idxEmail)) : "";
@@ -177,6 +206,7 @@ public class ImportarInscripcionesBean implements Serializable {
                         creadosAlumnos++;
                         nuevoAlumno = true;
                     } else {
+                        System.out.println("PHumanidades - Importador: Alumno ya existente con DNI: " + dni);
                         // Optional: update email or phone if existing student doesn't have them
                         boolean editNeeded = false;
                         if ((alumno.getCorreosElectronicos() == null || alumno.getCorreosElectronicos().isEmpty())) {
@@ -202,6 +232,7 @@ public class ImportarInscripcionesBean implements Serializable {
                             }
                         }
                         if (editNeeded) {
+                            System.out.println("PHumanidades - Importador: Actualizando datos de contacto del alumno DNI: " + dni);
                             alumnoRNLocal.edit(alumno);
                         }
                     }
@@ -217,6 +248,7 @@ public class ImportarInscripcionesBean implements Serializable {
                     }
 
                     if (inscripto) {
+                        System.out.println("PHumanidades - Importador: Alumno DNI " + dni + " ya se encuentra inscrito en la cohorte " + cohorte.getDescripcion() + ". Fila omitida.");
                         omitidos++;
                     } else {
                         InscripcionAlumnos inscripcion = new InscripcionAlumnos();
@@ -230,11 +262,13 @@ public class ImportarInscripcionesBean implements Serializable {
                         String mat = idxMatricula != -1 ? getCellValueAsString(row.getCell(idxMatricula)) : "";
                         inscripcion.setMatricula(mat);
 
+                        System.out.println("PHumanidades - Importador: Creando inscripción para DNI: " + dni + " en cohorte: " + cohorte.getDescripcion());
                         inscripcionAlumnosRNLocal.create(inscripcion);
                         creadasInscripciones++;
                     }
 
                 } catch (Exception e) {
+                    System.out.println("PHumanidades - Importador: Error en fila " + (i + 1) + ": " + e.getMessage());
                     LOGGER.log(Level.SEVERE, "Error al importar fila " + (i + 1), e);
                     errores++;
                     logErrores.append("Fila ").append(i + 1).append(": Error al registrar Alumno/Inscripción: ")
@@ -255,15 +289,20 @@ public class ImportarInscripcionesBean implements Serializable {
                             "- Filas con errores: %d",
                     creadosAlumnos, creadasInscripciones, omitidos, errores);
 
+            System.out.println("PHumanidades - Importador: " + summary.replace("<br/>", " ").replace("- ", ""));
+
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Importación Finalizada", summary));
 
             if (errores > 0) {
+                System.out.println("PHumanidades - Importador: Errores detallados:\n" + logErrores.toString().replace("<br/>", "\n"));
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Detalle de Errores", logErrores.toString()));
             }
 
         } catch (Exception e) {
+            System.out.println("PHumanidades - Importador: Error general durante la importación: " + e.getMessage());
+            e.printStackTrace();
             LOGGER.log(Level.SEVERE, "Error general en la importación de Excel", e);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Importación",

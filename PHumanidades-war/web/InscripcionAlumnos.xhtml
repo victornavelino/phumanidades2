@@ -203,8 +203,16 @@
         </p:dataTable>
 
         <p:dialog id="dImportarExcel" widgetVar="dlgImportarExcel" header="Importar Inscripciones desde Excel" modal="true" width="500">
-            <h:panelGrid columns="1" style="margin-bottom:10px">
-                <p:outputLabel value="Seleccione el archivo Excel (.xls, .xlsx):" />
+            <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                <p:outputLabel for="somCohorteImport" value="Cohorte Destino:" />
+                <p:selectOneMenu id="somCohorteImport" 
+                                 value="#{importarInscripcionesBean.cohorteSeleccionada}"
+                                 converter="ConversorCohorte">
+                    <f:selectItem itemLabel="Seleccione una cohorte..." itemValue="" noSelectionOption="true"/>
+                    <f:selectItems value="#{cohorteLstBean.lstSICohorte}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="fileExcel" value="Archivo Excel (.xls, .xlsx):" />
                 <p:fileUpload id="fileExcel" value="#{importarInscripcionesBean.file}"
                               mode="simple" skinSimple="true" label="Elegir Archivo"/>
             </h:panelGrid>

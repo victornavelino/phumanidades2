@@ -98,7 +98,8 @@ public class ImportarInscripcionesBean implements Serializable {
             return;
         }
 
-        System.out.println("PHumanidades - Importador: Iniciando proceso de importación del archivo: " + file.getFileName());
+        System.out.println(
+                "PHumanidades - Importador: Iniciando proceso de importación del archivo: " + file.getFileName());
 
         Workbook workbook = null;
         try {
@@ -106,7 +107,8 @@ public class ImportarInscripcionesBean implements Serializable {
             Sheet sheet = workbook.getSheetAt(0);
 
             if (sheet.getPhysicalNumberOfRows() < 2) {
-                System.out.println("PHumanidades - Importador: El archivo Excel está vacío o no contiene filas de datos.");
+                System.out.println(
+                        "PHumanidades - Importador: El archivo Excel está vacío o no contiene filas de datos.");
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia",
                                 "El archivo Excel está vacío o no contiene filas de datos."));
@@ -124,11 +126,14 @@ public class ImportarInscripcionesBean implements Serializable {
             int idxMatricula = getColumnIndex(headerRow, "matricula/resolucion", "matricula");
             int idxCohorte = getColumnIndex(headerRow, "cohorte");
 
-            System.out.println("PHumanidades - Importador: Mapeo de columnas: DNI=" + idxDni + ", Cohorte=" + idxCohorte + ", Nombre=" + idxNombre + ", Apellido=" + idxApellido);
+            System.out.println("PHumanidades - Importador: Mapeo de columnas: DNI=" + idxDni + ", Cohorte=" + idxCohorte
+                    + ", Nombre=" + idxNombre + ", Apellido=" + idxApellido);
 
-            // The cohorte column in Excel is only required if no cohorte is selected in the dialog
+            // The cohorte column in Excel is only required if no cohorte is selected in the
+            // dialog
             if (idxDni == -1 || (cohorteSeleccionada == null && idxCohorte == -1)) {
-                System.out.println("PHumanidades - Importador: Error de Columnas. No se pudieron mapear las columnas obligatorias (DNI y/o Cohorte).");
+                System.out.println(
+                        "PHumanidades - Importador: Error de Columnas. No se pudieron mapear las columnas obligatorias (DNI y/o Cohorte).");
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Columnas",
                                 "No se pudieron mapear las columnas obligatorias (DNI y/o Cohorte). Verifique los encabezados del archivo."));
@@ -161,7 +166,7 @@ public class ImportarInscripcionesBean implements Serializable {
                     String cohorteStr = idxCohorte != -1 ? getCellValueAsString(row.getCell(idxCohorte)) : "";
                     cohorte = findCohorte(cohorteStr, allCohortes);
                 }
-                
+
                 if (cohorte == null) {
                     errores++;
                     logErrores.append("Fila ").append(i + 1).append(": Cohorte no especificada o no encontrada. <br/>");
@@ -170,7 +175,12 @@ public class ImportarInscripcionesBean implements Serializable {
 
                 try {
                     // Check if Alumno exists
-                    Alumno alumno = alumnoRNLocal.findByAlumnoDni(dni);
+                    Alumno alumno;
+                    try {
+                        alumno = alumnoRNLocal.findByAlumnoDni(dni);
+                    } catch (Exception e) {
+                        alumno = null;
+                    }
                     boolean nuevoAlumno = false;
                     if (alumno == null) {
                         alumno = new Alumno();
@@ -180,7 +190,8 @@ public class ImportarInscripcionesBean implements Serializable {
                         alumno.setCalidad(Calidad.ACTIVO);
                         alumno.setCondicion(Condicion.REGULAR);
 
-                        System.out.println("PHumanidades - Importador: Registrando alumno nuevo DNI: " + dni + " (" + alumno.getApellido() + ", " + alumno.getNombre() + ")");
+                        System.out.println("PHumanidades - Importador: Registrando alumno nuevo DNI: " + dni + " ("
+                                + alumno.getApellido() + ", " + alumno.getNombre() + ")");
 
                         // Email
                         String emailVal = idxEmail != -1 ? getCellValueAsString(row.getCell(idxEmail)) : "";
@@ -232,7 +243,8 @@ public class ImportarInscripcionesBean implements Serializable {
                             }
                         }
                         if (editNeeded) {
-                            System.out.println("PHumanidades - Importador: Actualizando datos de contacto del alumno DNI: " + dni);
+                            System.out.println(
+                                    "PHumanidades - Importador: Actualizando datos de contacto del alumno DNI: " + dni);
                             alumnoRNLocal.edit(alumno);
                         }
                     }
@@ -248,7 +260,9 @@ public class ImportarInscripcionesBean implements Serializable {
                     }
 
                     if (inscripto) {
-                        System.out.println("PHumanidades - Importador: Alumno DNI " + dni + " ya se encuentra inscrito en la cohorte " + cohorte.getDescripcion() + ". Fila omitida.");
+                        System.out.println("PHumanidades - Importador: Alumno DNI " + dni
+                                + " ya se encuentra inscrito en la cohorte " + cohorte.getDescripcion()
+                                + ". Fila omitida.");
                         omitidos++;
                     } else {
                         InscripcionAlumnos inscripcion = new InscripcionAlumnos();
@@ -262,7 +276,8 @@ public class ImportarInscripcionesBean implements Serializable {
                         String mat = idxMatricula != -1 ? getCellValueAsString(row.getCell(idxMatricula)) : "";
                         inscripcion.setMatricula(mat);
 
-                        System.out.println("PHumanidades - Importador: Creando inscripción para DNI: " + dni + " en cohorte: " + cohorte.getDescripcion());
+                        System.out.println("PHumanidades - Importador: Creando inscripción para DNI: " + dni
+                                + " en cohorte: " + cohorte.getDescripcion());
                         inscripcionAlumnosRNLocal.create(inscripcion);
                         creadasInscripciones++;
                     }
@@ -295,7 +310,8 @@ public class ImportarInscripcionesBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Importación Finalizada", summary));
 
             if (errores > 0) {
-                System.out.println("PHumanidades - Importador: Errores detallados:\n" + logErrores.toString().replace("<br/>", "\n"));
+                System.out.println("PHumanidades - Importador: Errores detallados:\n"
+                        + logErrores.toString().replace("<br/>", "\n"));
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Detalle de Errores", logErrores.toString()));
             }

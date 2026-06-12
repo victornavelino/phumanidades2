@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "Librerias/**/*.jar",
+        "/home/hugo/glassfish-4.1/glassfish/modules/**/*.jar"
+    ]
+}

@@ -90,19 +90,16 @@ if ! command -v $ANT &> /dev/null; then
     exit 1
 fi
 
-# Buscar la librería CopyLibs de NetBeans y definir argumentos para Ant
+# Obtener el directorio absoluto del script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Usar la librería CopyLibs local del proyecto
+COPY_LIBS_PATH="$SCRIPT_DIR/Librerias/org-netbeans-modules-java-j2seproject-copylibstask.jar"
+
 export GLASSFISH_HOME="/home/hugo/glassfish-4.1"
-NB_PROPERTIES=$(ls /home/hugo/.netbeans/*/build.properties 2>/dev/null | sort -r | head -n 1)
-if [ -n "$NB_PROPERTIES" ]; then
-    COPY_LIBS_PATH=$(grep "libs.CopyLibs.classpath" "$NB_PROPERTIES" | cut -d'=' -f2)
-fi
-if [ ! -f "$COPY_LIBS_PATH" ]; then
-    COPY_LIBS_PATH="/usr/local/netbeans-8.0.2/java/ant/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar"
-fi
-ANT_ARGS="-Dlibs.CopyLibs.classpath=$COPY_LIBS_PATH -Dj2ee.server.home=$GLASSFISH_HOME/glassfish"
-if [ -n "$NB_PROPERTIES" ]; then
-    ANT_ARGS="-propertyfile $NB_PROPERTIES $ANT_ARGS"
-fi
+
+# Definir argumentos para Ant (incluyendo propiedades vacías para librerías globales de NetBeans para evitar fallos de copia)
+ANT_ARGS="-Dlibs.CopyLibs.classpath=$COPY_LIBS_PATH -Dj2ee.server.home=$GLASSFISH_HOME/glassfish -Dlibs.jsf20.classpath= -Dlibs.javaee-web-api-7.0.classpath= -Dlibs.spring-webmvc4.0.classpath= -Dlibs.spring-framework400.classpath="
 
 # Compilar el módulo WAR
 echo -e "${YELLOW}[1/2] Compilando módulo WAR...${NC}"

@@ -67,19 +67,16 @@ fi
 echo -e "${YELLOW}[1/4] Verificando servidor Glassfish...${NC}"
 $ASADMIN start-domain domain1
 
-# Buscar la librería CopyLibs de NetBeans y definir argumentos para Ant
+# Obtener el directorio absoluto del script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Usar la librería CopyLibs local del proyecto
+COPY_LIBS_PATH="$SCRIPT_DIR/Librerias/org-netbeans-modules-java-j2seproject-copylibstask.jar"
+
 export GLASSFISH_HOME="/home/hugo/glassfish-4.1"
-NB_PROPERTIES=$(ls /home/hugo/.netbeans/*/build.properties 2>/dev/null | sort -r | head -n 1)
-if [ -n "$NB_PROPERTIES" ]; then
-    COPY_LIBS_PATH=$(grep "libs.CopyLibs.classpath" "$NB_PROPERTIES" | cut -d'=' -f2)
-fi
-if [ ! -f "$COPY_LIBS_PATH" ]; then
-    COPY_LIBS_PATH="/usr/local/netbeans-8.0.2/java/ant/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar"
-fi
-ANT_ARGS="-Dlibs.CopyLibs.classpath=$COPY_LIBS_PATH -Dj2ee.server.home=$GLASSFISH_HOME/glassfish"
-if [ -n "$NB_PROPERTIES" ]; then
-    ANT_ARGS="-propertyfile $NB_PROPERTIES $ANT_ARGS"
-fi
+
+# Definir argumentos para Ant (incluyendo propiedades vacías para librerías globales de NetBeans para evitar fallos de copia)
+ANT_ARGS="-Dlibs.CopyLibs.classpath=$COPY_LIBS_PATH -Dj2ee.server.home=$GLASSFISH_HOME/glassfish -Dlibs.jsf20.classpath= -Dlibs.javaee-web-api-7.0.classpath= -Dlibs.spring-webmvc4.0.classpath= -Dlibs.spring-framework400.classpath="
 
 # Compilar el modulo WAR
 echo -e "${YELLOW}[2/4] Compilando modulo WAR...${NC}"
@@ -94,7 +91,9 @@ cd ..
 # Desplegar en Glassfish
 echo -e "${YELLOW}[3/4] Desplegando archivo WAR...${NC}"
 WAR_FILE="$PROJECT_WAR_DIR/dist/PHumanidades-war.war"
-$ASADMIN deploy --force=true "$WAR_FILE"
+# Desplegar limpiando primero para evitar el bug de "Keys cannot be duplicate" de Glassfish 4.1
+$ASADMIN undeploy PHumanidades-war >/dev/null 2>&1
+$ASADMIN deploy "$WAR_FILE"
 if [ $? -ne 0 ]; then
     echo -e "${RED}Error en el despliegue${NC}"
     exit 1

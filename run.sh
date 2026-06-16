@@ -12,23 +12,14 @@ export ANT="ant"
 export PROJECT_WAR_DIR="PHumanidades-war"
 LOG_FILE="$GLASSFISH_HOME/glassfish/domains/domain1/logs/server.log"
 
-# Buscar la librería CopyLibs de NetBeans (necesaria para empaquetar el WAR)
-# Intentamos obtenerla de la configuración del usuario
-NB_PROPERTIES=$(ls /home/hugo/.netbeans/*/build.properties 2>/dev/null | sort -r | head -n 1)
-if [ -n "$NB_PROPERTIES" ]; then
-    COPY_LIBS_PATH=$(grep "libs.CopyLibs.classpath" "$NB_PROPERTIES" | cut -d'=' -f2)
-fi
+# Obtener el directorio absoluto del script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Si no se encuentra, usar la ruta por defecto en este sistema
-if [ ! -f "$COPY_LIBS_PATH" ]; then
-    COPY_LIBS_PATH="/usr/local/netbeans-8.0.2/java/ant/extra/org-netbeans-modules-java-j2seproject-copylibstask.jar"
-fi
+# Usar la librería CopyLibs local del proyecto
+COPY_LIBS_PATH="$SCRIPT_DIR/Librerias/org-netbeans-modules-java-j2seproject-copylibstask.jar"
 
-# Definir argumentos base para Ant
-ANT_ARGS="-Dlibs.CopyLibs.classpath=$COPY_LIBS_PATH -Dj2ee.server.home=$GLASSFISH_HOME/glassfish"
-if [ -n "$NB_PROPERTIES" ]; then
-    ANT_ARGS="-propertyfile $NB_PROPERTIES $ANT_ARGS"
-fi
+# Definir argumentos base para Ant (incluyendo propiedades vacías para librerías globales de NetBeans para evitar fallos de copia)
+ANT_ARGS="-Dlibs.CopyLibs.classpath=$COPY_LIBS_PATH -Dj2ee.server.home=$GLASSFISH_HOME/glassfish -Dlibs.jsf20.classpath= -Dlibs.javaee-web-api-7.0.classpath= -Dlibs.spring-webmvc4.0.classpath= -Dlibs.spring-framework400.classpath="
 
 # Colores para la salida
 CYAN='\033[0;36m'
@@ -138,7 +129,9 @@ deploy_war() {
     echo -e "${YELLOW}[3/3] Desplegando archivo WAR...${NC}"
     WAR_FILE="$PROJECT_WAR_DIR/dist/PHumanidades-war.war"
     if [ -f "$WAR_FILE" ]; then
-        $ASADMIN deploy --force=true "$WAR_FILE"
+        # Desplegar limpiando primero para evitar el bug de "Keys cannot be duplicate" de Glassfish 4.1
+        $ASADMIN undeploy PHumanidades-war >/dev/null 2>&1
+        $ASADMIN deploy "$WAR_FILE"
         if [ $? -ne 0 ]; then
             echo -e "${RED}Error en el despliegue${NC}"
             return 1

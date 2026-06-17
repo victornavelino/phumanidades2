@@ -1,224 +1,193 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
-                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                 template="./Templates/adminTemplate.xhtml"
-                 xmlns:p="http://primefaces.org/ui"
-                 xmlns:h="http://java.sun.com/jsf/html"
-                 xmlns:f="http://java.sun.com/jsf/core">
+<!DOCTYPE composition
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    template="./Templates/adminTemplate.xhtml" xmlns:p="http://primefaces.org/ui" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
 
-    <ui:define name="top"> Datos Personales </ui:define>    
+    <ui:define name="top"> Datos Personales </ui:define>
 
     <ui:define name="content">
 
-        <ui:include src="AlumnoFindDlg.xhtml"/>
-        <ui:include src="CohorteFindDlg.xhtml"/>
+        <ui:include src="AlumnoFindDlg.xhtml" />
+        <ui:include src="CohorteFindDlg.xhtml" />
 
 
         <h1>
 
-            <h:outputText value="Inscripcion de Alumnos"
-                          class="Bienvenido"/>
+            <h:outputText value="Inscripcion de Alumnos" class="Bienvenido" />
 
         </h1>
-        <p:dialog id="dInscripcion"
-                  widgetVar="dlgInscripcion"
-                  closable="false" position="top" header="Inscripciones" modal="true"
-                  >      
+        <p:dialog id="dInscripcion" widgetVar="dlgInscripcion" closable="false" position="top" header="Inscripciones"
+            modal="true">
             <h:panelGrid columns="3">
                 <h:inputHidden value="#{inscripcionAlumnosBean.inscripcion.id}" />
-                <h:inputHidden value="#{inscripcionAlumnosBean.iActionBtnSelect}"/>
-                <h:outputText value=""/>
+                <h:inputHidden value="#{inscripcionAlumnosBean.iActionBtnSelect}" />
+                <h:outputText value="" />
 
-                <h:outputText value="Fecha de Inscripcion"/>
+                <h:outputText value="Fecha de Inscripcion" />
 
-                <p:calendar id="fechaInscripcion" 
-                            required="false"
-                            value="#{inscripcionAlumnosBean.inscripcion.fechaInscripcion}"
-                            mode="popup"
-                            showOn="button"
-                            navigator="true" locale="es_AR"/>
-                <h:outputText value=""/>
+                <p:calendar id="fechaInscripcion" required="false"
+                    value="#{inscripcionAlumnosBean.inscripcion.fechaInscripcion}" mode="popup" showOn="button"
+                    navigator="true" locale="es_AR" />
+                <h:outputText value="" />
 
-                <h:outputText value="Matricula/Resolución"/>
+                <h:outputText value="Matricula/Resolución" />
 
-                <p:inputText id="matricula" 
+                <p:inputText id="matricula" value="#{inscripcionAlumnosBean.inscripcion.matricula}" />
 
-                             value="#{inscripcionAlumnosBean.inscripcion.matricula}"/>
-
-                <h:outputText value=""/>
+                <h:outputText value="" />
 
 
-                <h:outputText value="Alumno: "/>
+                <h:outputText value="Alumno: " />
 
-                <h:panelGroup><h:outputText id="otAlumno1"
-                                            value="#{alumnoLstBean.alumnoSelect.dni} - #{alumnoLstBean.alumnoSelect.apellido} - #{alumnoLstBean.alumnoSelect.nombre}"/>
+                <h:panelGroup>
+                    <h:outputText id="otAlumno1"
+                        value="#{alumnoLstBean.alumnoSelect.dni} - #{alumnoLstBean.alumnoSelect.apellido} - #{alumnoLstBean.alumnoSelect.nombre}" />
 
-                    <p:commandButton id="cbBuscarAlumnoIns" 
-                                     icon="ui-icon-search"
-                                     actionListener="#{alumnoBean.abrirDlgFindAlumno()}"
-                                     update="dFindAlumno"
-                                     process="@this"/>
+                    <p:commandButton id="cbBuscarAlumnoIns" icon="ui-icon-search"
+                        actionListener="#{alumnoBean.abrirDlgFindAlumno()}" update="dFindAlumno" process="@this" />
 
-                </h:panelGroup>               
-                <h:outputText value=""/>
+                </h:panelGroup>
+                <h:outputText value="" />
 
 
 
 
-                <h:outputText value="Cohorte: "/>
-                <h:panelGroup>   <h:outputText id="otCohorte"
-                                               value="#{cohorteLstBean.cohorteSelect.descripcion} - #{cohorteLstBean.cohorteSelect.cantidadCuotas} - #{cohorteLstBean.cohorteSelect.importeCuota}"/>
-                    <p:commandButton id="cbBuscarCohorte" 
-                                     icon="ui-icon-search"
-                                     actionListener="#{cohorteBean.abrirDlgFindCohorte()}"
-                                     update="dFindCohorte"
-                                     process="@this"/>
-                </h:panelGroup>               
-                <h:outputText value=""/>
+                <h:outputText value="Cohorte: " />
+                <h:panelGroup>
+                    <h:outputText id="otCohorte"
+                        value="#{cohorteLstBean.cohorteSelect.descripcion} - #{cohorteLstBean.cohorteSelect.cantidadCuotas} - #{cohorteLstBean.cohorteSelect.importeCuota}" />
+                    <p:commandButton id="cbBuscarCohorte" icon="ui-icon-search"
+                        actionListener="#{cohorteBean.abrirDlgFindCohorte()}" update="dFindCohorte" process="@this" />
+                </h:panelGroup>
+                <h:outputText value="" />
 
 
             </h:panelGrid>
-            <p:messages autoUpdate="true"/>
+            <p:messages autoUpdate="true" />
             <h:panelGroup style="display:block; text-align:center">
-                <p:commandButton id="btnAltaInscripcion"
-                                 value=" " 
-                                 actionListener="#{inscripcionAlumnosBean.actionBtn}" 
-                                 binding="#{inscripcionAlumnosBean.cbAction}"
-                                 update=":frmPri:dtInscripciones,:frmPri:dInscripcion"
-                                 styleClass="boton"
-                                 />
+                <p:commandButton id="btnAltaInscripcion" value=" " actionListener="#{inscripcionAlumnosBean.actionBtn}"
+                    binding="#{inscripcionAlumnosBean.cbAction}" update=":frmPri:dtInscripciones,:frmPri:dInscripcion"
+                    styleClass="boton" />
 
 
-                <p:commandButton id="btnSalir"
-                                 value="Salir"  
-                                 actionListener="#{inscripcionAlumnosBean.limpiar()}"
-                                 oncomplete="PF('dlgInscripcion').hide()"
-                                 icon="ui-icon-cancel"
-                                 update=":frmPri:dtInscripciones,:frmPri:dInscripcion"
-                                 styleClass="boton"/></h:panelGroup>
+                <p:commandButton id="btnSalir" value="Salir" actionListener="#{inscripcionAlumnosBean.limpiar()}"
+                    oncomplete="PF('dlgInscripcion').hide()" icon="ui-icon-cancel"
+                    update=":frmPri:dtInscripciones,:frmPri:dInscripcion" styleClass="boton" />
+            </h:panelGroup>
 
 
         </p:dialog>
         <p>
 
-            <p:commandButton id="cbCreate"
-                             value="Agregar" 
-                             icon="ui-icon-circle-plus" 
-                             oncomplete="PF('dlgInscripcion').show();"
-                             actionListener="#{inscripcionAlumnosBean.setBtnSelect}"
-                             update=":frmPri:dtInscripciones,:frmPri:dInscripcion"
-                             />
+            <p:commandButton id="cbCreate" value="Agregar" icon="ui-icon-circle-plus"
+                oncomplete="PF('dlgInscripcion').show();" actionListener="#{inscripcionAlumnosBean.setBtnSelect}"
+                update=":frmPri:dtInscripciones,:frmPri:dInscripcion" />
 
             <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">
                 <p:printer target="dtInscripciones" />
             </p:commandButton>
 
             <p:commandButton value="Importar Excel" icon="ui-icon-arrowthick-1-n"
-                             onclick="PF('dlgImportarExcel').show();" type="button" />
+                onclick="PF('dlgImportarExcel').show();" type="button" />
         </p>
-        <p:messages autoUpdate="true"/>
-        
-        
-        <p:dataTable id="dtInscripciones"
-                     widgetVar="dtInscripciones"
-                     value="#{inscripcionAlumnosLstBean.inscripcionesAlumnos}" 
-                     filteredValue="#{inscripcionAlumnosLstBean.filtroInscripcionesAlumnos}" 
-                     var="item"
-                     style="overflow-x: auto;"
-                     paginator="true"
-                     rows="20"
-                     filterEvent="enter"
-                     rowsPerPageTemplate="20,50,100,500">   
+        <p:messages autoUpdate="true" />
+
+
+        <p:dataTable id="dtInscripciones" widgetVar="dtInscripciones"
+            value="#{inscripcionAlumnosLstBean.inscripcionesAlumnos}"
+            filteredValue="#{inscripcionAlumnosLstBean.filtroInscripcionesAlumnos}" var="item" style="overflow-x: auto;"
+            paginator="true" rows="20" filterEvent="enter" rowsPerPageTemplate="20,50,100,500">
 
             <p:column width="120">
 
-                <p:commandButton id="cbEdit"
-                                 actionListener="#{inscripcionAlumnosBean.setBtnSelect}"
-                                 oncomplete="PF('dlgInscripcion').show();"
-                                 title="Editar"
-                                 update=":frmPri:dtInscripciones,:frmPri:dInscripcion"
-                                 icon="ui-icon-pencil"
-                                 >
-                    <f:setPropertyActionListener value="#{item}" target="#{inscripcionAlumnosBean.inscripcion}" />  
-                    <f:setPropertyActionListener value="#{item.alumno}" target="#{alumnoLstBean.alumnoSelect}" />  
-                    <f:setPropertyActionListener value="#{item.cohorte}" target="#{cohorteLstBean.cohorteSelect}" />                     
+                <p:commandButton id="cbEdit" actionListener="#{inscripcionAlumnosBean.setBtnSelect}"
+                    oncomplete="PF('dlgInscripcion').show();" title="Editar"
+                    update=":frmPri:dtInscripciones,:frmPri:dInscripcion" icon="ui-icon-pencil">
+                    <f:setPropertyActionListener value="#{item}" target="#{inscripcionAlumnosBean.inscripcion}" />
+                    <f:setPropertyActionListener value="#{item.alumno}" target="#{alumnoLstBean.alumnoSelect}" />
+                    <f:setPropertyActionListener value="#{item.cohorte}" target="#{cohorteLstBean.cohorteSelect}" />
 
                 </p:commandButton>
 
 
-                <p:commandButton id="cbDelete"
-                                 title="Eliminar"
-                                 icon="ui-icon-circle-close" 
-                                 actionListener="#{inscripcionAlumnosBean.setBtnSelect}"
-                                 oncomplete="PF('dlgInscripcion').show();"
-                                 update=":frmPri:dtInscripciones,:frmPri:dInscripcion"
-                                 >
-                    <f:setPropertyActionListener value="#{item}" target="#{inscripcionAlumnosBean.inscripcion}" />  
-                    <f:setPropertyActionListener value="#{item.alumno}" target="#{alumnoLstBean.alumnoSelect}" />  
-                    <f:setPropertyActionListener value="#{item.cohorte}" target="#{cohorteLstBean.cohorteSelect}" />     
+                <p:commandButton id="cbDelete" title="Eliminar" icon="ui-icon-circle-close"
+                    actionListener="#{inscripcionAlumnosBean.setBtnSelect}" oncomplete="PF('dlgInscripcion').show();"
+                    update=":frmPri:dtInscripciones,:frmPri:dInscripcion">
+                    <f:setPropertyActionListener value="#{item}" target="#{inscripcionAlumnosBean.inscripcion}" />
+                    <f:setPropertyActionListener value="#{item.alumno}" target="#{alumnoLstBean.alumnoSelect}" />
+                    <f:setPropertyActionListener value="#{item.cohorte}" target="#{cohorteLstBean.cohorteSelect}" />
                 </p:commandButton>
 
             </p:column>
 
 
-            <p:column
-                style="word-wrap:break-word;" filterBy="#{item.alumno}" sortBy="#{item.alumno.apellido}">
+            <p:column style="word-wrap:break-word;" filterBy="#{item.alumno}" sortBy="#{item.alumno.apellido}">
                 <f:facet name="header">
-                    <h:outputText value="Alumno"/>
+                    <h:outputText value="Alumno" />
                 </f:facet>
-                <h:outputText value="#{item.alumno}"/>
+                <h:outputText value="#{item.alumno}" />
             </p:column>
-            <p:column
-                style="word-wrap:break-word;" filterBy="#{item.cohorte.carrera}">
+            <p:column style="word-wrap:break-word;" filterBy="#{item.cohorte.carrera}">
                 <f:facet name="header">
-                    <h:outputText value="Carrera"/>
+                    <h:outputText value="Carrera" />
                 </f:facet>
-                <h:outputText value="#{item.cohorte.carrera}"/>
+                <h:outputText value="#{item.cohorte.carrera}" />
             </p:column>
-            <p:column
-                filterBy="#{item.cohorte.descripcion}"
-
-                style="word-wrap:break-word;">
+            <p:column filterBy="#{item.cohorte.descripcion}" style="word-wrap:break-word;">
                 <f:facet name="header">
-                    <h:outputText value="Cohorte"/>
+                    <h:outputText value="Cohorte" />
                 </f:facet>
-                <h:outputText value="#{item.cohorte}"/>
-            </p:column>            
-            <p:column  filterBy="#{item.matricula}"
-                       style="word-wrap:break-word;">
+                <h:outputText value="#{item.cohorte}" />
+            </p:column>
+            <p:column filterBy="#{item.matricula}" style="word-wrap:break-word;">
                 <f:facet name="header">
-                    <h:outputText value="Matricula"/>
+                    <h:outputText value="Matricula" />
                 </f:facet>
-                <h:outputText value="#{item.matricula}"/>
-            </p:column>  
-            <p:column sortBy="#{item.fechaInscripcion}"
-                      style="word-wrap:break-word;">
+                <h:outputText value="#{item.matricula}" />
+            </p:column>
+            <p:column sortBy="#{item.fechaInscripcion}" style="word-wrap:break-word;">
                 <f:facet name="header">
                     <h:outputText value="Fecha Inscripción" />
                 </f:facet>
-                <h:outputText value="#{item.fechaInscripcion}">  <f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+                <h:outputText value="#{item.fechaInscripcion}">
+                    <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
                 </h:outputText>
-            </p:column>  
+            </p:column>
         </p:dataTable>
 
-        <p:dialog id="dImportarExcel" widgetVar="dlgImportarExcel" header="Importar Inscripciones desde Excel" modal="true" width="500">
-            <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
-                <p:outputLabel for="somCohorteImport" value="Cohorte Destino:" />
-                <p:selectOneMenu id="somCohorteImport" 
-                                 value="#{importarInscripcionesBean.cohorteSeleccionada}"
-                                 converter="ConversorCohorte">
-                    <f:selectItem itemLabel="Seleccione una cohorte..." itemValue="" noSelectionOption="true"/>
-                    <f:selectItems value="#{cohorteLstBean.lstSICohorte}"/>
-                </p:selectOneMenu>
+        <p:dialog id="dImportarExcel" widgetVar="dlgImportarExcel" header="Importar Inscripciones desde Excel"
+            modal="true" width="850" resizable="false" position="top" showEffect="fade" hideEffect="fade"
+            style="margin-top: 50px;">
+            <div style="text-align: center; padding: 15px;">
+                <h:panelGrid columns="1" style="width: 100%; margin: 0 auto; text-align: center;" cellpadding="10">
+                    <h:panelGroup style="display: block;">
+                        <p:outputLabel for="somCohorteImport" value="Cohorte Destino:"
+                            style="font-weight: bold; display: block; margin-bottom: 5px;" />
+                        <p:selectOneMenu id="somCohorteImport" value="#{importarInscripcionesBean.cohorteSeleccionada}"
+                            converter="ConversorCohorte" style="width: 90%;">
+                            <f:selectItem itemLabel="Seleccione una cohorte..." itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{cohorteLstBean.lstSICohorte}" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
 
-                <p:outputLabel for="fileExcel" value="Archivo Excel (.xls, .xlsx):" />
-                <p:fileUpload id="fileExcel" value="#{importarInscripcionesBean.file}"
-                              mode="simple" skinSimple="true" label="Elegir Archivo"/>
-            </h:panelGrid>
-            <p:commandButton value="Importar" actionListener="#{importarInscripcionesBean.importar}"
-                             ajax="false" update=":frmPri:dtInscripciones" styleClass="boton" />
-            <p:commandButton value="Cancelar" onclick="PF('dlgImportarExcel').hide();" type="button" styleClass="boton" />
+                    <h:panelGroup style="display: block; margin-top: 15px;">
+                        <p:outputLabel for="fileExcel" value="Archivo Excel (.xls, .xlsx):"
+                            style="font-weight: bold; display: block; margin-bottom: 5px;" />
+                        <p:fileUpload id="fileExcel" value="#{importarInscripcionesBean.file}" mode="simple"
+                            skinSimple="true" label="Elegir Archivo" style="width: 90%;" />
+                    </h:panelGroup>
+                </h:panelGrid>
+
+                <h:panelGroup style="display:block; text-align:center; margin-top: 30px;">
+                    <p:commandButton value="Importar" actionListener="#{importarInscripcionesBean.importar}"
+                        ajax="false" update=":frmPri:dtInscripciones" styleClass="boton" icon="ui-icon-check"
+                        style="margin-right: 15px;" />
+                    <p:commandButton value="Cancelar" onclick="PF('dlgImportarExcel').hide();" type="button"
+                        styleClass="boton" icon="ui-icon-close" />
+                </h:panelGroup>
+            </div>
         </p:dialog>
     </ui:define>
 </ui:composition>

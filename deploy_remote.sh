@@ -81,7 +81,50 @@ if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_HOST" ] || [ -z "$REMOTE_PATH" ]; then
     exit 1
 fi
 
-echo -e "${CYAN}--- Iniciando Proceso de Despliegue Remoto (Debian) ---${NC}"
+# ── Selector de entorno ──────────────────────────────────────────────────────
+echo -e ""
+echo -e "${CYAN}╔══════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║     SELECCIÓN DE ENTORNO DE DESPLIEGUE   ║${NC}"
+echo -e "${CYAN}╠══════════════════════════════════════════╣${NC}"
+echo -e "${CYAN}║  ${YELLOW}1)${NC} Develop     ${GRAY}(rama de desarrollo)${CYAN}      ║${NC}"
+echo -e "${CYAN}║  ${RED}2) Producción${NC} ${GRAY}(entorno en vivo)${CYAN}          ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════╝${NC}"
+echo -e ""
+read -r -p "$(echo -e ${YELLOW})Elegí el entorno [1/2]: $(echo -e ${NC})" ENV_CHOICE
+
+case "$ENV_CHOICE" in
+    1)
+        DEPLOY_ENV="Develop"
+        DEPLOY_PATH="$REMOTE_PATH"
+        ;;
+    2)
+        if [ -z "$REMOTE_PATH_PROD" ]; then
+            echo -e "${RED}Error: La variable REMOTE_PATH_PROD no está definida en el archivo .env${NC}"
+            exit 1
+        fi
+        DEPLOY_ENV="Producción"
+        DEPLOY_PATH="$REMOTE_PATH_PROD"
+        # Confirmación extra antes de desplegar a producción
+        echo -e ""
+        echo -e "${RED}⚠  Estás por desplegar a PRODUCCIÓN. Esta acción afecta a usuarios reales.${NC}"
+        read -r -p "$(echo -e ${RED})¿Confirmar despliegue a Producción? [s/N]: $(echo -e ${NC})" CONFIRM_PROD
+        if [[ ! "$CONFIRM_PROD" =~ ^[sS]$ ]]; then
+            echo -e "${YELLOW}Despliegue cancelado.${NC}"
+            exit 0
+        fi
+        ;;
+    *)
+        echo -e "${RED}Opción inválida. Ingresá 1 o 2.${NC}"
+        exit 1
+        ;;
+esac
+
+echo -e ""
+echo -e "${GREEN}✔  Entorno seleccionado: ${YELLOW}${DEPLOY_ENV}${NC}"
+echo -e "${GRAY}   Path destino: ${DEPLOY_PATH}${NC}"
+echo -e ""
+
+echo -e "${CYAN}--- Iniciando Proceso de Despliegue Remoto → ${DEPLOY_ENV} ---${NC}"
 
 # Verificar si Ant está instalado
 if ! command -v $ANT &> /dev/null; then
@@ -112,7 +155,7 @@ fi
 cd ..
 
 # Desplegar en servidor remoto
-echo -e "${YELLOW}[2/2] Enviando archivo WAR al servidor remoto...${NC}"
+echo -e "${YELLOW}[2/2] Enviando archivo WAR al servidor remoto (${DEPLOY_ENV})...${NC}"
 WAR_FILE="$PROJECT_WAR_DIR/dist/PHumanidades-war.war"
 WAR_FILENAME=$(basename "$WAR_FILE")
 
@@ -156,7 +199,7 @@ fi
 # (Esta pedirá la contraseña de root directamente y de forma clara)
 echo -e "${YELLOW}Elevando privilegios con su -c para mover el archivo a la carpeta autodeploy...${NC}"
 echo -e "${CYAN}Por favor, ingresa la contraseña de ROOT cuando se te solicite a continuación:${NC}"
-ssh -t -o ControlPath="$SSH_SOCKET" -p "$REMOTE_PORT" "${REMOTE_USER}@${REMOTE_HOST}" "su -c 'mv /tmp/$WAR_FILENAME $REMOTE_PATH/$WAR_FILENAME && chmod 777 $REMOTE_PATH/$WAR_FILENAME'"
+ssh -t -o ControlPath="$SSH_SOCKET" -p "$REMOTE_PORT" "${REMOTE_USER}@${REMOTE_HOST}" "su -c 'mv /tmp/$WAR_FILENAME $DEPLOY_PATH/$WAR_FILENAME && chmod 777 $DEPLOY_PATH/$WAR_FILENAME'"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}Error al mover el archivo a la carpeta autodeploy con su -c.${NC}"
@@ -164,5 +207,5 @@ if [ $? -ne 0 ]; then
 fi
 
 echo -e ""
-echo -e "${GREEN}¡Éxito! Archivo WAR copiado directamente a la carpeta de autodeploy de Glassfish.${NC}"
+echo -e "${GREEN}¡Éxito! Archivo WAR copiado a la carpeta autodeploy de ${DEPLOY_ENV}.${NC}"
 echo -e "${CYAN}Glassfish en el servidor remoto debería detectarlo y redesplegarlo automáticamente.${NC}"

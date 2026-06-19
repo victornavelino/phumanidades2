@@ -166,7 +166,8 @@
                         <p:outputLabel for="somCohorteImport" value="Cohorte Destino:"
                             style="font-weight: bold; display: block; margin-bottom: 5px;" />
                         <p:selectOneMenu id="somCohorteImport" value="#{importarInscripcionesBean.cohorteSeleccionada}"
-                            converter="ConversorCohorte" style="width: 90%;">
+                            converter="ConversorCohorte" style="width: 90%;"
+                            filter="true" filterMatchMode="contains" filterPlaceholder="Buscar cohorte...">
                             <f:selectItem itemLabel="Seleccione una cohorte..." itemValue="" noSelectionOption="true" />
                             <f:selectItems value="#{cohorteLstBean.lstSICohorte}" />
                         </p:selectOneMenu>

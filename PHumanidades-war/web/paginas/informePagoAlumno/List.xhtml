@@ -25,6 +25,7 @@
                     </div>
                 </div>
                 <h:outputText id="idPreferencia" style="display:none" value="#{mercadoPagoBean.preferenceId}" />
+                <h:outputText id="idPaymentUrlQR" style="display:none" value="#{pagoQRBean.paymentUrl}" />
             </b:container>
         </div>
 
@@ -63,10 +64,15 @@
                                         process="informePagoAlumnoListForm:datalist, @this"
                                         update="informePagoAlumnoListForm:datalist" />
 
-                                    <!-- <p:commandButton id="btnPagar" icon="ui-icon-cart" value="Pagar Cuota"
+                                    <p:commandButton id="btnPagar" icon="ui-icon-cart" value="Pagar Cuota"
                                         action="#{mercadoPagoBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
                                         styleClass="btn-modern btn-primary" oncomplete="PF('MercadoPagoDialog').show()"
-                                        update=":idPreferencia, :mpDialog" /> -->
+                                        update=":idPreferencia, :mpDialog" />
+
+                                    <p:commandButton id="btnPagarQR" icon="ui-icon-image" value="Pagar con QR"
+                                        action="#{pagoQRBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
+                                        styleClass="btn-modern btn-primary" oncomplete="PF('PagoQRDialog').show()"
+                                        update=":idPaymentUrlQR, :qrDialog" />
                                 </div>
                             </p:column>
                         </p:dataTable>
@@ -158,16 +164,6 @@
 
                 <script>
 
-                    let metodo = () => {
-                        console.log("Hola metodo");
-                        console.log("Bean disponible?: ", #{ mercadoPagoBean != null});
-                    console.log("PreferenceId existe?: ", #{ mercadoPagoBean.preferenceId != null });
-                    //let pref = document.getElementById("hiddenPreferenceId").value;
-                    const preferenciaXD = document.getElementById("idPreferencia").textContent;
-                    console.log("preferencia=== ", valor); // Aquí debería aparecer el ID correctamente 
-                }
-
-
                     function crearBotonMercadoPago() {
                         console.log("entro crearBotonMercadoPago")
                         //BUSCAMOS Y ELIMINAMOS EL CONTENEDOR DEL BOTON DE MERCADO PAGO
@@ -218,6 +214,28 @@
                             }
                         });
                         console.log("preferenciaaaaa = " + preferencia)
+                    }
+
+                    function crearQR() {
+                        console.log("entro crearQR")
+                        let containerId = "qr_container";
+                        let container = document.getElementById(containerId);
+                        container.innerHTML = "";
+
+                        var paymentUrl = document.getElementById("idPaymentUrlQR").textContent;
+                        console.log("paymentUrl QR Fiserv = " + paymentUrl);
+
+                        if (!paymentUrl) {
+                            container.innerHTML = "<span class='summary-label'>No se pudo generar el QR. Intente nuevamente.</span>";
+                            return;
+                        }
+
+                        new QRCode(container, {
+                            text: paymentUrl,
+                            width: 220,
+                            height: 220,
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
                     }
 
                 </script>
@@ -279,6 +297,64 @@
                 <div class="payment-footer-badge">
                     <i class="fa fa-shield"></i>
                     <span>Pagos encriptados con seguridad SSL</span>
+                </div>
+            </div>
+
+        </p:dialog>
+
+        <!-- Dialog de Pago con QR (Fiserv) -->
+
+        <p:dialog widgetVar="PagoQRDialog" id="qrDialog" modal="true" resizable="false" responsive="true"
+            width="450" styleClass="modern-dialog payment-dialog" header="Pago con QR"
+            onShow="crearQR()"> <!-- Genera el QR al abrir -->
+
+            <div class="payment-container">
+                <!-- Resumen de Pago -->
+                <div class="payment-summary-card">
+                    <div class="summary-header">
+                        <i class="fa fa-receipt summary-icon"></i>
+                        <span class="summary-title">Resumen de la Transacción</span>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Concepto</span>
+                        <h:outputText id="descripcionPagoQR" class="summary-value concept-value"
+                            value="#{pagoQRBean.cohorte.descripcion}" />
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Método de Pago</span>
+                        <span class="summary-value method-value"><i class="fa fa-qrcode"></i> QR</span>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-total-row">
+                        <span class="total-label">Monto Total</span>
+                        <span class="total-amount">
+                            <h:outputText id="montoPagoQR" value="#{pagoQRBean.monto}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2"
+                                    minFractionDigits="2" locale="es-AR" />
+                            </h:outputText>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Separador / Indicación -->
+                <div class="payment-action-text">
+                    Escanee el código QR con la app de su banco o billetera virtual para completar el pago:
+                </div>
+
+                <!-- Contenedor del QR (DEBE estar visible al inicializarse) -->
+                <div id="qr_container" class="wallet-brick-container"
+                    style="display:flex; justify-content:center; align-items:center; min-height:220px;"></div>
+
+                <!-- Medidas de seguridad y footer -->
+                <div class="payment-footer-badge">
+                    <i class="fa fa-shield"></i>
+                    <span>Pagos procesados de forma segura por Fiserv</span>
                 </div>
             </div>
 

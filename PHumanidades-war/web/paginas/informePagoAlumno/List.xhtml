@@ -64,7 +64,7 @@
                                         process="informePagoAlumnoListForm:datalist, @this"
                                         update="informePagoAlumnoListForm:datalist" />
 
-                                    <p:commandButton id="btnPagar" icon="ui-icon-cart" value="Pagar Cuota"
+                                    <!--<p:commandButton id="btnPagar" icon="ui-icon-cart" value="Pagar Cuota"
                                         action="#{mercadoPagoBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
                                         styleClass="btn-modern btn-primary" oncomplete="PF('MercadoPagoDialog').show()"
                                         update=":idPreferencia, :mpDialog" />
@@ -72,7 +72,7 @@
                                     <p:commandButton id="btnPagarQR" icon="ui-icon-image" value="Pagar con QR"
                                         action="#{pagoQRBean.cargarPreferencia(cort, loginAlumnoBean.alumno)}"
                                         styleClass="btn-modern btn-primary" oncomplete="PF('PagoQRDialog').show()"
-                                        update=":idPaymentUrlQR, :qrDialog" />
+                                        update=":idPaymentUrlQR, :qrDialog" />-->
                                 </div>
                             </p:column>
                         </p:dataTable>
@@ -304,9 +304,9 @@
 
         <!-- Dialog de Pago con QR (Fiserv) -->
 
-        <p:dialog widgetVar="PagoQRDialog" id="qrDialog" modal="true" resizable="false" responsive="true"
-            width="450" styleClass="modern-dialog payment-dialog" header="Pago con QR"
-            onShow="crearQR()"> <!-- Genera el QR al abrir -->
+        <p:dialog widgetVar="PagoQRDialog" id="qrDialog" modal="true" resizable="false" responsive="true" width="450"
+            styleClass="modern-dialog payment-dialog" header="Pago con QR" onShow="crearQR()">
+            <!-- Genera el QR al abrir -->
 
             <div class="payment-container">
                 <!-- Resumen de Pago -->

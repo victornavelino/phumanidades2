@@ -56,7 +56,7 @@ public class ProveedorBean implements Serializable {
 
     private AutoComplete autoComplete;
 
-    //Busqueda Proveedor
+    // Busqueda Proveedor
     private String tipoBusqueda;
     private List<String> lstTipoBusqueda;
     private String busqueda;
@@ -75,14 +75,18 @@ public class ProveedorBean implements Serializable {
     public String labelAutoCompletar() {
         return ((Proveedor) this.getAutoComplete().getItemValue()).getRazonSocial();
 
-    }//fin labelAutoCompletar
+    }// fin labelAutoCompletar
 
-    /*   public UsuarioLstBean getUsuarioLstBean() {
-     return usuarioLstBean;
-     }*/
-    /*   public void setUsuarioLstBean(UsuarioLstBean usuarioLstBean) {
-     this.usuarioLstBean = usuarioLstBean;
-     }*/
+    /*
+     * public UsuarioLstBean getUsuarioLstBean() {
+     * return usuarioLstBean;
+     * }
+     */
+    /*
+     * public void setUsuarioLstBean(UsuarioLstBean usuarioLstBean) {
+     * this.usuarioLstBean = usuarioLstBean;
+     * }
+     */
     public Proveedor getProveedor() {
         return proveedor;
     }
@@ -189,17 +193,17 @@ public class ProveedorBean implements Serializable {
                 this.edit();
                 break;
             case 2:
-                //borra el campo
+                // borra el campo
                 this.delete();
-                //this.delete(Boolean.TRUE);
+                // this.delete(Boolean.TRUE);
                 break;
-        }//fin switch
+        }// fin switch
 
-    }//fin actionBtn
+    }// fin actionBtn
 
     public void setBtnSelect(ActionEvent e) {
         CommandButton btnSelect = (CommandButton) e.getSource();
-        //activo el boton
+        // activo el boton
         this.getCbAction().setDisabled(false);
         switch (btnSelect.getId()) {
             case "cbCreate":
@@ -228,24 +232,27 @@ public class ProveedorBean implements Serializable {
                     RequestContext.getCurrentInstance().execute("PF('dlgProveedor').show();");
                 }
 
-//                FacesContext context = FacesContext.getCurrentInstance();
-//                ProveedorLstBean lstProveedor = (ProveedorLstBean) context.getApplication().evaluateExpressionGet(context, "#{proveedorLstBean}", ProveedorLstBean.class);
-//                this.proveedor = lstProveedor.getProveedorSeleccionado();
-//                if (proveedor.getDomicilio() != null) {
-//                    this.domicilioBean.setDomicilio(proveedor.getDomicilio());
-//                } else {
-//                    this.domicilioBean.setDomicilio(new Domicilio());
-//                }
-//                if (proveedor.getTelefonos() != null && !proveedor.getTelefonos().isEmpty()) {
-//                    proveedor.getTelefonos().get(0);
-//                    this.listadoTelefonosBean.setLstTelefonos(this.proveedor.getTelefonos());
-//                } else {
-//                    this.listadoTelefonosBean.setLstTelefonos(new ArrayList<Telefono>());
-//                }
+                // FacesContext context = FacesContext.getCurrentInstance();
+                // ProveedorLstBean lstProveedor = (ProveedorLstBean)
+                // context.getApplication().evaluateExpressionGet(context,
+                // "#{proveedorLstBean}", ProveedorLstBean.class);
+                // this.proveedor = lstProveedor.getProveedorSeleccionado();
+                // if (proveedor.getDomicilio() != null) {
+                // this.domicilioBean.setDomicilio(proveedor.getDomicilio());
+                // } else {
+                // this.domicilioBean.setDomicilio(new Domicilio());
+                // }
+                // if (proveedor.getTelefonos() != null && !proveedor.getTelefonos().isEmpty())
+                // {
+                // proveedor.getTelefonos().get(0);
+                // this.listadoTelefonosBean.setLstTelefonos(this.proveedor.getTelefonos());
+                // } else {
+                // this.listadoTelefonosBean.setLstTelefonos(new ArrayList<Telefono>());
+                // }
                 break;
         }
 
-    }//fin setBtnSelect
+    }// fin setBtnSelect
 
     private boolean existeCuit(String cuit) {
         try {
@@ -264,6 +271,9 @@ public class ProveedorBean implements Serializable {
     }
 
     private boolean existeCbuAlias(String cbuAlias) {
+        if (cbuAlias.isEmpty() || cbuAlias.equals("")) {
+            return false;
+        }
         try {
             return proveedorRNLocal.findByCbuAlias(cbuAlias) != null;
         } catch (Exception e) {
@@ -279,7 +289,8 @@ public class ProveedorBean implements Serializable {
             if (this.getProveedor().getCuit().isEmpty() || this.getProveedor().getCuit().equals("")) {
                 sMensaje = "Debe ingresar un CUIT";
                 severity = FacesMessage.SEVERITY_ERROR;
-            } else if (this.getProveedor().getRazonSocial().isEmpty() || this.getProveedor().getRazonSocial().equals("")) {
+            } else if (this.getProveedor().getRazonSocial().isEmpty()
+                    || this.getProveedor().getRazonSocial().equals("")) {
                 sMensaje = "Debe ingresar una razon Social";
                 severity = FacesMessage.SEVERITY_ERROR;
             } else if (existeCuit(this.getProveedor().getCuit())) {
@@ -302,9 +313,9 @@ public class ProveedorBean implements Serializable {
                 RequestContext.getCurrentInstance().update("frmPri:growl");
                 this.getCbAction().setValue("Agregar");
                 this.getCbAction().setDisabled(true);
-                //agregar a la lista
+                // agregar a la lista
                 // this.getUsuarioLstBean().getLstUsuario().add(this.getUsuario());
-                //limíar campos
+                // limíar campos
                 this.limpiar();
             }
 
@@ -318,7 +329,7 @@ public class ProveedorBean implements Serializable {
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.addMessage(null, fm);
         }
-    }//fin create
+    }// fin create
 
     public void edit() {
 
@@ -335,11 +346,12 @@ public class ProveedorBean implements Serializable {
             getProveedorLstBean().findAllProveedores();
             RequestContext.getCurrentInstance().update("frmPri:dtProveedor");
 
-            //elimino y agrego  a la lista
-//            int iPos = this.getProveedorLstBean().getLstProveedor().indexOf(this.getProveedor());
-//            
-//            this.getProveedorLstBean().getLstProveedor().remove(iPos);
-//            this.getProveedorLstBean().getLstProveedor().add(iPos, this.getProveedor());
+            // elimino y agrego a la lista
+            // int iPos =
+            // this.getProveedorLstBean().getLstProveedor().indexOf(this.getProveedor());
+            //
+            // this.getProveedorLstBean().getLstProveedor().remove(iPos);
+            // this.getProveedorLstBean().getLstProveedor().add(iPos, this.getProveedor());
             this.getCbAction().setValue("Editar");
             this.getCbAction().setDisabled(true);
             limpiar();
@@ -360,7 +372,7 @@ public class ProveedorBean implements Serializable {
             fc.addMessage(null, fm);
         }
 
-    }//fin edit
+    }// fin edit
 
     public void delete() {
         String sMensaje = "";
@@ -396,7 +408,7 @@ public class ProveedorBean implements Serializable {
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.addMessage(null, fm);
         }
-    }//fin delete
+    }// fin delete
 
     public void limpiar() {
         this.setProveedor(new Proveedor());
@@ -407,7 +419,7 @@ public class ProveedorBean implements Serializable {
         RequestContext.getCurrentInstance().update("frmPri:growl");
         RequestContext.getCurrentInstance().update("frmPri:dtProveedor");
         RequestContext.getCurrentInstance().execute("PF('dtProveedor').filter();");
-    }//fin limpiar
+    }// fin limpiar
 
     public void buscarCuitRazon() {
 
@@ -426,14 +438,14 @@ public class ProveedorBean implements Serializable {
                 }
             }
         } catch (Exception e) {
-            //this.getMensajeBean().setMensaje("Error: " + e.getMessage());
+            // this.getMensajeBean().setMensaje("Error: " + e.getMessage());
             // RequestContext.getCurrentInstance().update("dMensaje");
             // RequestContext.getCurrentInstance().execute("dlgMensaje.show()");
         }
 
     }
 
-    //metodo cargar selectOneMenu DocenteFindDlg (opciones DNI, Apellido)  
+    // metodo cargar selectOneMenu DocenteFindDlg (opciones DNI, Apellido)
     private void cargarLstTipoBusqueda() {
         lstTipoBusqueda = new ArrayList();
         lstTipoBusqueda.add("CUIT");
@@ -464,7 +476,7 @@ public class ProveedorBean implements Serializable {
             fc.addMessage(null, fm);
         }
         return null;
-    }//fin dinfByid
+    }// fin dinfByid
 
     public Proveedor findRazonSocial(String razonSocial) {
         try {
@@ -477,7 +489,7 @@ public class ProveedorBean implements Serializable {
             fc.addMessage(null, fm);
         }
         return null;
-    }//fin dinfByid
+    }// fin dinfByid
 
     private void cargar() {
         this.proveedor = this.proveedorRNLocal.findById(this.getProveedor().getId());

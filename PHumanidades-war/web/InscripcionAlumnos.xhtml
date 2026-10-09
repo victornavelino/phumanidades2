@@ -90,7 +90,8 @@
             </p:commandButton>
 
             <p:commandButton value="Importar Excel" icon="ui-icon-arrowthick-1-n"
-                onclick="PF('dlgImportarExcel').show();" type="button" />
+                actionListener="#{cohorteLstBean.cargarCohorte()}" process="@this"
+                update=":frmPri:dImportarExcel" oncomplete="PF('dlgImportarExcel').show();" />
         </p>
         <p:messages autoUpdate="true" />
 

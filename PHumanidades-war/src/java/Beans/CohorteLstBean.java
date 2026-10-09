@@ -17,7 +17,9 @@ import RN.IngresoRNLocal;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -301,15 +303,51 @@ public class CohorteLstBean implements Serializable {
         try {
             this.setLstCohorte(this.cohorteRNLocal.findCohortes());
             this.setLstSICohorte(new ArrayList<SelectItem>());
-            List<Carrera> findCarreras = this.carreraRNLocal.findCarreras();
-            for (Carrera car : findCarreras) {
-                List<SelectItem> selectItems = new ArrayList<>();
-                SelectItemGroup group = new SelectItemGroup(car.getDescripcion());
-                for (Cohorte cor : car.getCohortes()) {
-                    SelectItem selectItem = new SelectItem(cor, cor.getDescripcion());
-                    selectItems.add(selectItem);
+
+            //Agrupamos partiendo de las cohortes y no de Carrera.getCohortes(), porque esa
+            //coleccion es el lado inverso de la relacion y queda desactualizada (cache) cuando
+            //se da de alta una cohorte, con lo que la carrera aparecia sin sus cohortes.
+            Map<Long, List<SelectItem>> itemsPorCarrera = new LinkedHashMap<>();
+            Map<Long, String> descripcionPorCarrera = new LinkedHashMap<>();
+
+            for (Carrera car : this.carreraRNLocal.findCarreras()) {
+                if (car.getId() != null) {
+                    itemsPorCarrera.put(car.getId(), new ArrayList<SelectItem>());
+                    descripcionPorCarrera.put(car.getId(), car.getDescripcion());
                 }
-                group.setSelectItems(selectItems.toArray(new SelectItem[selectItems.size()]));
+            }
+
+            List<SelectItem> sinCarrera = new ArrayList<>();
+            for (Cohorte cor : this.getLstCohorte()) {
+                SelectItem selectItem = new SelectItem(cor, cor.getDescripcion());
+                Carrera car = cor.getCarrera();
+                if (car == null || car.getId() == null) {
+                    sinCarrera.add(selectItem);
+                    continue;
+                }
+                List<SelectItem> items = itemsPorCarrera.get(car.getId());
+                if (items == null) {
+                    //carrera que no vino en el listado de carreras
+                    items = new ArrayList<>();
+                    itemsPorCarrera.put(car.getId(), items);
+                    descripcionPorCarrera.put(car.getId(), car.getDescripcion());
+                }
+                items.add(selectItem);
+            }
+
+            for (Map.Entry<Long, List<SelectItem>> entry : itemsPorCarrera.entrySet()) {
+                List<SelectItem> items = entry.getValue();
+                if (items.isEmpty()) {
+                    continue;//no mostramos carreras sin cohortes
+                }
+                SelectItemGroup group = new SelectItemGroup(descripcionPorCarrera.get(entry.getKey()));
+                group.setSelectItems(items.toArray(new SelectItem[items.size()]));
+                this.getLstSICohorte().add(group);
+            }
+
+            if (!sinCarrera.isEmpty()) {
+                SelectItemGroup group = new SelectItemGroup("Sin carrera");
+                group.setSelectItems(sinCarrera.toArray(new SelectItem[sinCarrera.size()]));
                 this.getLstSICohorte().add(group);
             }
         } catch (Exception ex) {

@@ -11,6 +11,7 @@
 
         <ui:include src="AlumnoFindDlg.xhtml" />
         <ui:include src="CohorteFindDlg.xhtml" />
+        <h:outputScript library="js" name="selectOneMenuFiltroGrupos.js" />
 
 
         <h1>
@@ -91,7 +92,7 @@
 
             <p:commandButton value="Importar Excel" icon="ui-icon-arrowthick-1-n"
                 actionListener="#{cohorteLstBean.cargarCohorte()}" process="@this"
-                update=":frmPri:dImportarExcel" oncomplete="PF('dlgImportarExcel').show();" />
+                update=":frmPri:pgImportarExcel" oncomplete="PF('dlgImportarExcel').show();" />
         </p>
         <p:messages autoUpdate="true" />
 
@@ -161,14 +162,14 @@
         <p:dialog id="dImportarExcel" widgetVar="dlgImportarExcel" header="Importar Inscripciones desde Excel"
             modal="true" width="850" resizable="false" position="top" showEffect="fade" hideEffect="fade"
             style="margin-top: 50px;">
-            <div style="text-align: center; padding: 15px;">
+            <h:panelGroup id="pgImportarExcel" layout="block" style="text-align: center; padding: 15px;">
                 <h:panelGrid columns="1" style="width: 100%; margin: 0 auto; text-align: center;" cellpadding="10">
                     <h:panelGroup style="display: block;">
                         <p:outputLabel for="somCohorteImport" value="Cohorte Destino:"
                             style="font-weight: bold; display: block; margin-bottom: 5px;" />
                         <p:selectOneMenu id="somCohorteImport" value="#{importarInscripcionesBean.cohorteSeleccionada}"
                             converter="ConversorCohorte" style="width: 90%;"
-                            filter="true" filterMatchMode="contains" filterPlaceholder="Buscar cohorte...">
+                            filter="true" filterMatchMode="contains" filterPlaceholder="Buscar carrera o cohorte...">
                             <f:selectItem itemLabel="Seleccione una cohorte..." itemValue="" noSelectionOption="true" />
                             <f:selectItems value="#{cohorteLstBean.lstSICohorte}" />
                         </p:selectOneMenu>
@@ -189,7 +190,7 @@
                     <p:commandButton value="Cancelar" onclick="PF('dlgImportarExcel').hide();" type="button"
                         styleClass="boton" icon="ui-icon-close" />
                 </h:panelGroup>
-            </div>
+            </h:panelGroup>
         </p:dialog>
     </ui:define>
 </ui:composition>

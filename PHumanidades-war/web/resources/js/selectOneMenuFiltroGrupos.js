@@ -5,8 +5,15 @@
  * Ademas ignora acentos y mayusculas (si no es caseSensitive).
  */
 (function () {
-    if (!window.PrimeFaces || !PrimeFaces.widget || !PrimeFaces.widget.SelectOneMenu) {
-        return;
+
+    function aplicarOverride() {
+        if (!window.PrimeFaces || !PrimeFaces.widget || !PrimeFaces.widget.SelectOneMenu) {
+            //forms.js de PrimeFaces todavia no cargo (orden de recursos JSF no garantizado);
+            //reintentamos en vez de quedar silenciosamente sin aplicar el fix.
+            setTimeout(aplicarOverride, 50);
+            return;
+        }
+        PrimeFaces.widget.SelectOneMenu.prototype.filter = filtroConGrupos;
     }
 
     function normalizar(texto, caseSensitive) {
@@ -17,7 +24,7 @@
         return caseSensitive ? texto : texto.toLowerCase();
     }
 
-    PrimeFaces.widget.SelectOneMenu.prototype.filter = function (value) {
+    function filtroConGrupos(value) {
         var $this = this,
             caseSensitive = this.cfg.caseSensitive,
             filtro = normalizar(value, caseSensitive),
@@ -63,5 +70,7 @@
             this.itemsWrapper.height(this.cfg.initialHeight);
         }
         this.alignPanel();
-    };
+    }
+
+    aplicarOverride();
 })();

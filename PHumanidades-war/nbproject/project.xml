@@ -106,10 +106,6 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.jasperreports-chart-themes-6.9.0.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
                     <file>${file.reference.jasperreports-custom-visualization-6.9.0.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
